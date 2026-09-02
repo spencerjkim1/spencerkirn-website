@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spencer Kim</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-weight: 700;
+            background: #fff;
+            color: #000;
+            line-height: 1.4;
+        }
+        
+        /* Name Header */
+        .name {
+            padding: 120px 40px 80px 40px;
+            border-bottom: 3px solid #000;
+        }
+        
+        .name h1 {
+            font-size: 8rem;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        
+        /* Section Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        
+        /* Section Styling */
+        section {
+            padding: 100px 0;
+            border-bottom: 1px solid #000;
+        }
+        
+        section:last-child {
+            border-bottom: none;
+        }
+        
+        section h2 {
+            font-size: 4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+            margin-bottom: 60px;
+        }
+        
+        /* Content Area */
+        .content {
+            background: #f5f5f5;
+            padding: 80px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .placeholder {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #999;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 60px 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .name h1 {
+                font-size: 5rem;
+            }
+            
+            section h2 {
+                font-size: 3rem;
+            }
+            
+            .content {
+                padding: 60px 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .name {
+                padding: 80px 20px 40px 20px;
+            }
+            
+            .name h1 {
+                font-size: 3.5rem;
+            }
+            
+            .container {
+                padding: 0 20px;
+            }
+            
+            section {
+                padding: 60px 0;
+            }
+            
+            section h2 {
+                font-size: 2.5rem;
+                margin-bottom: 40px;
+            }
+            
+            .content {
+                padding: 40px 30px;
+                min-height: 300px;
+            }
+            
+            .placeholder {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .name h1 {
+                font-size: 2.5rem;
+            }
+            
+            section h2 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Name -->
+    <div class="name">
+        <h1>SPENCER KIM</h1>
+    </div>
+
+    <div class="container">
+        <!-- Spotify Section -->
+        <section id="spotify">
+            <h2>SPOTIFY</h2>
+            <div class="content">
+                <iframe data-testid="embed-iframe" style="border-radius:0" src="https://open.spotify.com/embed/playlist/37i9dQZF1EppctzT1uUNeh?utm_source=generator&si=91da0a2a12354925" width="100%" height="400" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </section>
+
+        <!-- Letterboxd Section -->
+        <section id="letterboxd">
+            <h2>LETTERBOXD</h2>
+            <div class="content">
+                <a href="https://letterboxd.com/spencerjkim/" target="_blank" 
+                   style="color: #000; text-decoration: none; font-size: 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+                   VIEW LETTERBOXD →
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        CLOUDFLARE PAGES
+    </footer>
+</body>
+</html>

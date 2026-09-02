@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Demo Hub - Spencer Kim</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-weight: 700;
+            background: #fff;
+            color: #000;
+            line-height: 1.4;
+        }
+        
+        /* Header */
+        .header {
+            padding: 60px 40px;
+            border-bottom: 3px solid #000;
+        }
+        
+        .header h1 {
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .header p {
+            font-size: 1.5rem;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #000;
+            text-decoration: none;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+        
+        /* Demo Grid */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .demo-card {
+            background: #f5f5f5;
+            padding: 40px;
+            border: 2px solid #000;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: #000;
+            display: block;
+        }
+        
+        .demo-card:hover {
+            background: #000;
+            color: #fff;
+            transform: translateY(-5px);
+        }
+        
+        .demo-card h3 {
+            font-size: 2rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .demo-card p {
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+        
+        .demo-card .status {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+        }
+        
+        /* Category Headers */
+        .category {
+            margin-top: 80px;
+        }
+        
+        .category:first-child {
+            margin-top: 0;
+        }
+        
+        .category h2 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #000;
+            padding-bottom: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 60px 40px;
+            text-align: center;
+            border-top: 1px solid #000;
+            margin-top: 80px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 3rem;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/" class="back-link">← BACK TO HOME</a>
+        <h1>DEMO HUB</h1>
+        <p>Interactive demonstrations of Cloudflare products</p>
+    </div>
+
+    <div class="container">
+        <!-- Core Platform -->
+        <div class="category">
+            <h2>Core Platform</h2>
+            <div class="demo-grid">
+                <a href="#" class="demo-card">
+                    <h3>Workers</h3>
+                    <p>Serverless JavaScript execution at the edge. See A/B testing, geo-routing, and API proxying in action.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Pages</h3>
+                    <p>Git-connected static site deployment. You're looking at it right now - this entire site runs on Pages.</p>
+                    <div class="status">Live Demo</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>CDN</h3>
+                    <p>Global content delivery with cache analytics. View real-time HIT/MISS ratios and edge performance.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Storage & Data -->
+        <div class="category">
+            <h2>Storage & Data</h2>
+            <div class="demo-grid">
+                <a href="#" class="demo-card">
+                    <h3>R2</h3>
+                    <p>S3-compatible object storage. Upload, browse, and download files with zero egress fees.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>D1</h3>
+                    <p>Serverless SQL database. Run live queries and see edge-replicated data in action.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>KV</h3>
+                    <p>Low-latency key-value storage. Watch session data and cache updates happen in real-time.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Durable Objects</h3>
+                    <p>Stateful serverless coordination. Try a live collaborative drawing board or real-time chat.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Security -->
+        <div class="category">
+            <h2>Security</h2>
+            <div class="demo-grid">
+                <a href="#" class="demo-card">
+                    <h3>WAF</h3>
+                    <p>Web Application Firewall rules. See how custom rules block malicious requests in real-time.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Turnstile</h3>
+                    <p>Privacy-first CAPTCHA alternative. Test the user-friendly challenge experience.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Access</h3>
+                    <p>Zero Trust authentication. Protect internal apps with identity-based access control.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Bot Management</h3>
+                    <p>Detect and mitigate automated traffic. View your bot score and challenge suspicious requests.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- AI & Developer Tools -->
+        <div class="category">
+            <h2>AI & Developer Tools</h2>
+            <div class="demo-grid">
+                <a href="#" class="demo-card">
+                    <h3>Workers AI</h3>
+                    <p>Run AI models at the edge. Try text generation, image classification, and embeddings.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Vectorize</h3>
+                    <p>Vector database for semantic search. Upload documents and search by meaning, not keywords.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>AI Gateway</h3>
+                    <p>Control AI API requests with caching, rate limiting, and cost tracking.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Stream</h3>
+                    <p>Video streaming and storage. Upload videos and watch adaptive bitrate streaming in action.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Advanced Features -->
+        <div class="category">
+            <h2>Advanced Features</h2>
+            <div class="demo-grid">
+                <a href="#" class="demo-card">
+                    <h3>Queues</h3>
+                    <p>Message queue for async processing. Submit jobs and watch them process across workers.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Workflows</h3>
+                    <p>Multi-step orchestration with retries. Build durable execution flows that survive failures.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Calls</h3>
+                    <p>WebRTC video/audio infrastructure. Start a live video call powered by Cloudflare's network.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+                
+                <a href="#" class="demo-card">
+                    <h3>Browser Rendering</h3>
+                    <p>Puppeteer in Workers. Take screenshots, generate PDFs, and automate browser tasks.</p>
+                    <div class="status">Coming Soon</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        SPENCER KIM • CUSTOMER SOLUTIONS ENGINEER • CLOUDFLARE
+    </footer>
+</body>
+</html>
