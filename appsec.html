@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A safe, interactive Cloudflare Application Security demonstration.">
+  <title>Application Security Demo — Spencer Kim</title>
+  <style>
+    :root {
+      --ink: #111;
+      --paper: #fff;
+      --muted: #f3f3f3;
+      --line: #d8d8d8;
+      --orange: #f48120;
+      --green: #18794e;
+      --red: #b42318;
+      --blue: #175cd3;
+      --shadow: 7px 7px 0 var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px clamp(18px, 4vw, 48px);
+      border-bottom: 2px solid var(--ink);
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar a {
+      font-weight: 800;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(24,121,78,.15);
+    }
+
+    header {
+      padding: clamp(54px, 10vw, 120px) clamp(20px, 5vw, 64px);
+      border-bottom: 3px solid var(--ink);
+      background:
+        linear-gradient(135deg, rgba(244,129,32,.18), transparent 45%),
+        var(--paper);
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      font-size: .88rem;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 1150px;
+      margin: 0;
+      font-size: clamp(3rem, 10vw, 8rem);
+      line-height: .88;
+      letter-spacing: -.065em;
+      text-transform: uppercase;
+    }
+
+    .lede {
+      max-width: 780px;
+      margin: 30px 0 0;
+      font-size: clamp(1.1rem, 2.2vw, 1.55rem);
+      font-weight: 500;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      padding: 7px 11px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      background: var(--paper);
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 48px 0 100px;
+    }
+
+    .notice {
+      margin: 0 0 34px;
+      padding: 20px 22px;
+      border: 2px solid var(--ink);
+      border-left: 10px solid var(--orange);
+      background: #fffaf5;
+    }
+
+    .notice strong { display: block; margin-bottom: 5px; }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 72px 0 24px;
+      padding-bottom: 14px;
+      border-bottom: 3px solid var(--ink);
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.2rem);
+      line-height: .95;
+      letter-spacing: -.045em;
+      text-transform: uppercase;
+    }
+
+    .section-heading span {
+      flex: 0 0 auto;
+      font-size: .8rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      grid-column: span 6;
+      padding: 26px;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .card.full { grid-column: 1 / -1; }
+    .card.third { grid-column: span 4; }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.45rem;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .card p { margin: 8px 0 16px; }
+    .card ul, .card ol { padding-left: 22px; }
+    .card li { margin: 7px 0; }
+
+    .number {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 18px;
+      border: 2px solid var(--ink);
+      background: var(--orange);
+      font-weight: 900;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 0;
+    }
+
+    .button, button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 11px 15px;
+      border: 2px solid var(--ink);
+      border-radius: 0;
+      background: var(--orange);
+      color: var(--ink);
+      font-weight: 900;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      cursor: pointer;
+    }
+
+    .button.secondary, button.secondary { background: var(--paper); }
+    .button.dark, button.dark { background: var(--ink); color: var(--paper); }
+    .button:hover, button:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); }
+    button:disabled { opacity: .55; cursor: wait; transform: none; box-shadow: none; }
+
+    pre {
+      min-height: 94px;
+      margin: 18px 0 0;
+      padding: 16px;
+      overflow: auto;
+      border: 1px solid var(--ink);
+      background: var(--muted);
+      font: 600 .86rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .code-wrap { position: relative; }
+    .copy {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      min-height: auto;
+      padding: 7px 9px;
+      font-size: .7rem;
+      background: var(--paper);
+    }
+
+    .result-ok { color: var(--green); }
+    .result-bad { color: var(--red); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      padding: 0;
+      list-style: none;
+      counter-reset: flow;
+    }
+
+    .steps li {
+      position: relative;
+      min-height: 122px;
+      padding: 18px 14px;
+      border: 2px solid var(--ink);
+      background: var(--muted);
+      font-weight: 800;
+    }
+
+    .steps li::before {
+      counter-increment: flow;
+      content: counter(flow);
+      display: block;
+      margin-bottom: 12px;
+      color: var(--orange);
+      font-size: 1.6rem;
+      font-weight: 900;
+    }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 13px; border: 1px solid var(--ink); text-align: left; vertical-align: top; }
+    th { background: var(--ink); color: var(--paper); text-transform: uppercase; }
+
+    details { border: 2px solid var(--ink); margin-top: 14px; }
+    summary { padding: 16px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+    details > div { padding: 0 16px 16px; }
+
+    footer {
+      padding: 28px clamp(20px, 5vw, 64px);
+      border-top: 3px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    footer p { max-width: 1180px; margin: auto; }
+
+    @media (max-width: 850px) {
+      .card, .card.third { grid-column: 1 / -1; }
+      .steps { grid-template-columns: 1fr; }
+      .topbar .status { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar" aria-label="Demo navigation">
+    <a href="/demo">← Demo hub</a>
+    <span class="status"><span class="dot"></span> Owned test environment</span>
+  </nav>
+
+  <header>
+    <p class="eyebrow">Cloudflare customer demonstration</p>
+    <h1>Application Security</h1>
+    <p class="lede">Observe traffic, apply a narrowly scoped security control at Cloudflare's edge, and verify the result—without changing application code.</p>
+    <div class="pill-row" aria-label="Capabilities covered">
+      <span class="pill">Security Analytics</span>
+      <span class="pill">Custom WAF Rules</span>
+      <span class="pill">Rate Limiting</span>
+      <span class="pill">Managed WAF</span>
+      <span class="pill">Bot Controls</span>
+      <span class="pill">DDoS Protection</span>
+    </div>
+  </header>
+
+  <main>
+    <aside class="notice">
+      <strong>Safe demonstration boundary</strong>
+      Run these tests only on <code>spencerkirn.com/appsec</code>. Every live rule must match both this hostname and the <code>/appsec</code> path. Do not run attack or load tests against customer or third-party domains, and never generate a live DDoS attack.
+    </aside>
+
+    <section aria-labelledby="flow-title">
+      <div class="section-heading">
+        <h2 id="flow-title">Customer story</h2>
+        <span>15-minute flow</span>
+      </div>
+      <ol class="steps">
+        <li>Establish normal traffic</li>
+        <li>Observe it in analytics</li>
+        <li>Apply an edge control</li>
+        <li>Repeat the request</li>
+        <li>Investigate the event</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="preflight-title">
+      <div class="section-heading">
+        <h2 id="preflight-title">Preflight</h2>
+        <span>Before presenting</span>
+      </div>
+      <div class="grid">
+        <article class="card third">
+          <h3>1. Correct zone</h3>
+          <p>Confirm the Cloudflare dashboard is open to <strong>spencerkirn.com</strong>, not a customer or production zone.</p>
+        </article>
+        <article class="card third">
+          <h3>2. Saved filters</h3>
+          <p>Open <strong>Security → Analytics</strong>. Filter host to <code>spencerkirn.com</code> and path to <code>/appsec</code>.</p>
+        </article>
+        <article class="card third">
+          <h3>3. Scoped rules</h3>
+          <p>Name each demo rule <strong>DEMO — ...</strong> and keep it disabled outside rehearsals and customer sessions.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="normal-title">
+      <div class="section-heading">
+        <h2 id="normal-title">1. Normal request</h2>
+        <span>Baseline</span>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="number">1</div>
+          <h3>Send a normal request</h3>
+          <p>This request contains no demo trigger. It should return successfully before and after the security rules are deployed.</p>
+          <div class="button-row">
+            <button id="normal-test" type="button">Run normal request</button>
+          </div>
+          <pre id="normal-output" aria-live="polite">Not run</pre>
+        </article>
+        <article class="card">
+          <h3>What to show</h3>
+          <ol>
+            <li>Run the request.</li>
+            <li>Open <strong>Security → Analytics</strong>.</li>
+            <li>Explain that Security Analytics includes all incoming HTTP requests.</li>
+            <li>Contrast it with the Events view, which contains requests security products flagged or acted on.</li>
+          </ol>
+          <p><strong>Talk track:</strong> “We start with visibility before mitigation. That lets us understand normal application behavior and scope controls safely.”</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="custom-title">
+      <div class="section-heading">
+        <h2 id="custom-title">2. Custom WAF rule</h2>
+        <span>Deterministic live demo</span>
+      </div>
+      <div class="grid">
+        <article class="card full">
+          <div class="number">2</div>
+          <h3>Create a business-specific control</h3>
+          <p>In Cloudflare, open <strong>Security → Security rules → Create rule → Custom rules</strong>.</p>
+          <ul>
+            <li><strong>Rule name:</strong> <code>DEMO — block custom query</code></li>
+            <li><strong>Action:</strong> Block (or Managed Challenge if you want to demonstrate user verification)</li>
+          </ul>
+          <div class="code-wrap">
+            <button class="copy secondary" type="button" data-copy="custom-expression">Copy</button>
+            <pre id="custom-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and http.request.uri.query contains "cf-demo=custom-rule")</pre>
+          </div>
+          <p>The hostname, path, and unique query parameter prevent this rule from affecting the rest of the site.</p>
+          <div class="button-row">
+            <a class="button secondary" href="/appsec?cf-demo=normal">Open allowed control</a>
+            <a class="button" href="/appsec?cf-demo=custom-rule">Trigger custom rule</a>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Expected result</h3>
+          <p>The control URL should load normally. The trigger URL should show Cloudflare's block or challenge response after the rule is deployed.</p>
+        </article>
+        <article class="card">
+          <h3>Prove it</h3>
+          <p>Open <strong>Security → Analytics → Events</strong>. Filter to the host/path and service <strong>Custom rules</strong>. Expand the event and show its action, rule, source, path, and Ray ID.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="rate-title">
+      <div class="section-heading">
+        <h2 id="rate-title">3. Rate limiting</h2>
+        <span>Low-volume owned test</span>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="number">3</div>
+          <h3>Create the rate-limit rule</h3>
+          <p>Open <strong>Security → Security rules → Create rule → Rate limiting rules</strong>.</p>
+          <ul>
+            <li><strong>Name:</strong> <code>DEMO — appsec burst</code></li>
+            <li><strong>Characteristic:</strong> IP</li>
+            <li><strong>Example threshold:</strong> 5 requests in 10 seconds</li>
+            <li><strong>Action:</strong> Block</li>
+            <li><strong>Mitigation timeout:</strong> 10 seconds, if your plan exposes it</li>
+            <li><strong>Cached assets:</strong> Include them; this page is a static asset</li>
+          </ul>
+          <div class="code-wrap">
+            <button class="copy secondary" type="button" data-copy="rate-expression">Copy</button>
+            <pre id="rate-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and http.request.uri.query contains "rate-test=")</pre>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Run 12 requests</h3>
+          <p>The test sends a small sequential burst to this owned page. Early requests should succeed; later requests should normally return <code>429</code> after the rule takes effect.</p>
+          <div class="button-row">
+            <button id="rate-test" type="button">Run rate-limit test</button>
+          </div>
+          <pre id="rate-output" aria-live="polite">Not run</pre>
+          <p><small>Distributed enforcement can lag slightly, so the exact transition request may vary.</small></p>
+        </article>
+        <article class="card full">
+          <h3>Prove it</h3>
+          <p>Open <strong>Security → Analytics → Events</strong>. Filter service to <strong>Rate limiting rules</strong> and path to <code>/appsec</code>. Show the action, threshold, source, path, and Ray ID. Disable the rule after the session.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="managed-title">
+      <div class="section-heading">
+        <h2 id="managed-title">4. Managed WAF</h2>
+        <span>Scoped rehearsal first</span>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="number">4</div>
+          <h3>Configure safely</h3>
+          <ol>
+            <li>Open <strong>Security → Settings</strong>.</li>
+            <li>Filter by <strong>Web application exploits</strong>.</li>
+            <li>Review the managed rulesets your plan exposes.</li>
+            <li>Edit scope, if available, to the expression below.</li>
+            <li>Use a non-blocking/logging posture first if your entitlement permits it.</li>
+          </ol>
+          <div class="code-wrap">
+            <button class="copy secondary" type="button" data-copy="managed-expression">Copy</button>
+            <pre id="managed-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec"))</pre>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Harmless test strings</h3>
+          <p>These links place inert, encoded strings in the query of your static demo page. A managed-rule match depends on the enabled ruleset and configuration, so rehearse first.</p>
+          <div class="button-row">
+            <a class="button secondary" href="/appsec?cf-demo=managed-sqli&search=%27%20OR%201%3D1--">Open SQLi-pattern test</a>
+            <a class="button secondary" href="/appsec?cf-demo=managed-xss&search=%3Cscript%3Ealert%281%29%3C%2Fscript%3E">Open XSS-pattern test</a>
+          </div>
+          <p><strong>Stop condition:</strong> If you cannot safely scope or observe the ruleset first, do not enable it solely for this demo. Use a dedicated demo zone or a recorded event.</p>
+        </article>
+        <article class="card full">
+          <h3>Prove and tune</h3>
+          <p>Under <strong>Security → Analytics → Events</strong>, filter service to managed rules and path to <code>/appsec</code>. Show the ruleset, rule ID, description, category, action, and Ray ID. Explain that production rollout begins with traffic analysis and targeted exceptions—not indiscriminately enabling every rule.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="layers-title">
+      <div class="section-heading">
+        <h2 id="layers-title">5. Additional layers</h2>
+        <span>Guided discussion</span>
+      </div>
+      <div class="grid">
+        <article class="card third">
+          <h3>Bot controls</h3>
+          <p>Under <strong>Security → Settings</strong>, filter by <strong>Bot traffic</strong>.</p>
+          <ul>
+            <li>Free: Bot Fight Mode</li>
+            <li>Pro/Business/Enterprise: Super Bot Fight Mode</li>
+            <li>Enterprise add-on: Bot Management score and analytics</li>
+          </ul>
+          <p>Do not promise a 1–99 bot score on every plan. Bot Fight Mode is coarse and cannot be skipped by a custom rule.</p>
+        </article>
+        <article class="card third">
+          <h3>Turnstile</h3>
+          <p>Use Turnstile for signup, login, and checkout abuse. A real implementation requires server-side Siteverify validation; a widget by itself does not secure a form.</p>
+          <p>Tokens expire after five minutes and are single-use.</p>
+          <a class="button secondary" href="https://developers.cloudflare.com/turnstile/get-started/server-side-validation/" target="_blank" rel="noopener">Validation docs ↗</a>
+        </article>
+        <article class="card third">
+          <h3>DDoS protection</h3>
+          <p>Cloudflare DDoS protection is always on. Explain the always-on architecture and use sanitized historical evidence or a recording.</p>
+          <p><strong>Never generate a live DDoS attack.</strong></p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="order-title">
+      <div class="section-heading">
+        <h2 id="order-title">Execution order</h2>
+        <span>Important behavior</span>
+      </div>
+      <div class="card full">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order</th><th>Security phase</th><th>Demo implication</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>HTTP DDoS protection</td><td>Always-on controls evaluate first.</td></tr>
+              <tr><td>2</td><td>Custom rules</td><td>A block or challenge here prevents later phases from evaluating.</td></tr>
+              <tr><td>3</td><td>Rate limiting rules</td><td>Use a separate query trigger so it does not hit the custom rule.</td></tr>
+              <tr><td>4</td><td>Managed WAF rules</td><td>Managed rules may never see a request terminated earlier.</td></tr>
+              <tr><td>5</td><td>Super Bot Fight Mode</td><td>Runs after the WAF phases shown above.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><small>Bot Fight Mode is outside this Ruleset Engine sequence and cannot be skipped using a custom rule.</small></p>
+      </div>
+    </section>
+
+    <section aria-labelledby="runbook-title">
+      <div class="section-heading">
+        <h2 id="runbook-title">Presenter runbook</h2>
+        <span>Customer-ready</span>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>15-minute sequence</h3>
+          <ol>
+            <li><strong>0–2 min:</strong> Frame the application and edge security architecture.</li>
+            <li><strong>2–4 min:</strong> Run normal traffic and show Security Analytics.</li>
+            <li><strong>4–7 min:</strong> Trigger the custom rule and inspect the event.</li>
+            <li><strong>7–10 min:</strong> Run the rate-limit test and inspect the result.</li>
+            <li><strong>10–13 min:</strong> Show the managed WAF event and tuning approach.</li>
+            <li><strong>13–15 min:</strong> Close with bots, Turnstile, API Shield, and Page Shield.</li>
+          </ol>
+        </article>
+        <article class="card">
+          <h3>Reset after presenting</h3>
+          <ol>
+            <li>Disable rules named <code>DEMO — ...</code>.</li>
+            <li>Restore managed WAF settings to their previous state.</li>
+            <li>Restore bot settings to their previous state.</li>
+            <li>Verify <code>/</code>, <code>/demo</code>, and <code>/appsec</code>.</li>
+            <li>Save a sanitized screenshot of each working event as a fallback.</li>
+          </ol>
+        </article>
+      </div>
+
+      <details>
+        <summary>30-second executive summary</summary>
+        <div><p>“Cloudflare places visibility and security controls in front of the application. We can identify request patterns, apply managed and business-specific policies, control abusive rates, and investigate the result from one platform—while limiting rules to the exact applications and paths that need protection.”</p></div>
+      </details>
+      <details>
+        <summary>Next technical modules</summary>
+        <div><p>Turnstile with Siteverify; API Shield discovery, schemas, JWT, mTLS, sequences, and abuse detection; Page Shield; Bot Management; Attack Score; leaked credentials and account takeover; malicious uploads using approved harmless fixtures; GraphQL protection; and Logpush/SIEM workflows.</p></div>
+      </details>
+    </section>
+
+    <section aria-labelledby="sources-title">
+      <div class="section-heading">
+        <h2 id="sources-title">References</h2>
+        <span>Cloudflare documentation</span>
+      </div>
+      <div class="grid">
+        <article class="card third"><h3>Rules</h3><p><a href="https://developers.cloudflare.com/waf/custom-rules/create-dashboard/" target="_blank" rel="noopener">Custom rules ↗</a></p><p><a href="https://developers.cloudflare.com/waf/rate-limiting-rules/create-zone-dashboard/" target="_blank" rel="noopener">Rate limiting ↗</a></p></article>
+        <article class="card third"><h3>Analytics</h3><p><a href="https://developers.cloudflare.com/waf/analytics/security-analytics/" target="_blank" rel="noopener">Security Analytics ↗</a></p><p><a href="https://developers.cloudflare.com/waf/analytics/security-events/" target="_blank" rel="noopener">Security Events ↗</a></p></article>
+        <article class="card third"><h3>Architecture</h3><p><a href="https://developers.cloudflare.com/waf/feature-interoperability/" target="_blank" rel="noopener">Execution order ↗</a></p><p><a href="https://developers.cloudflare.com/waf/managed-rules/" target="_blank" rel="noopener">Managed rules ↗</a></p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Cloudflare Application Security Demo</strong> — built for controlled demonstrations on an owned environment.</p>
+  </footer>
+
+  <script>
+    const prettyHeaders = response => ({
+      status: response.status,
+      allowed: response.ok,
+      ray_id: response.headers.get('cf-ray') || 'See response page / Security Events',
+      cache_status: response.headers.get('cf-cache-status') || 'Not exposed',
+      content_type: response.headers.get('content-type') || 'Unknown'
+    });
+
+    document.querySelector('#normal-test').addEventListener('click', async event => {
+      const button = event.currentTarget;
+      const output = document.querySelector('#normal-output');
+      button.disabled = true;
+      output.className = '';
+      output.textContent = 'Sending request…';
+      const started = performance.now();
+      try {
+        const response = await fetch('/appsec?cf-demo=normal&t=' + Date.now(), { cache: 'no-store' });
+        const result = { ...prettyHeaders(response), elapsed_ms: Math.round(performance.now() - started) };
+        output.textContent = JSON.stringify(result, null, 2);
+        output.className = response.ok ? 'result-ok' : 'result-bad';
+      } catch (error) {
+        output.textContent = JSON.stringify({ error: error.message }, null, 2);
+        output.className = 'result-bad';
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.querySelector('#rate-test').addEventListener('click', async event => {
+      const button = event.currentTarget;
+      const output = document.querySelector('#rate-output');
+      button.disabled = true;
+      output.className = '';
+      output.textContent = 'Sending 12 sequential requests…';
+      const results = [];
+      const run = Date.now();
+      try {
+        for (let i = 1; i <= 12; i++) {
+          const started = performance.now();
+          const response = await fetch('/appsec?rate-test=' + run + '-' + i, { cache: 'no-store' });
+          results.push({
+            request: i,
+            status: response.status,
+            ray_id: response.headers.get('cf-ray') || null,
+            elapsed_ms: Math.round(performance.now() - started)
+          });
+          output.textContent = JSON.stringify(results, null, 2);
+        }
+        const limited = results.some(result => result.status === 429 || result.status === 403);
+        output.className = limited ? 'result-ok' : '';
+      } catch (error) {
+        results.push({ error: error.message });
+        output.textContent = JSON.stringify(results, null, 2);
+        output.className = 'result-bad';
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.querySelectorAll('[data-copy]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const source = document.getElementById(button.dataset.copy);
+        try {
+          await navigator.clipboard.writeText(source.textContent.trim());
+          const old = button.textContent;
+          button.textContent = 'Copied';
+          setTimeout(() => { button.textContent = old; }, 1200);
+        } catch {
+          button.textContent = 'Select manually';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
