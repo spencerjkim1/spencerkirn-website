@@ -1,0 +1,27 @@
+name: AppSec synthetic demo traffic
+ 
+on:
+  schedule:
+    # Every 15 minutes. GitHub schedules use UTC and may start a few minutes late.
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+ 
+permissions:
+  contents: read
+ 
+concurrency:
+  group: appsec-synthetic-traffic
+  cancel-in-progress: false
+ 
+jobs:
+  generate-traffic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TARGET_ORIGIN: https://spencerkirn.com
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+ 
+      - name: Generate labeled, low-volume demo traffic
+        run: node scripts/appsec-traffic-generator.mjs
