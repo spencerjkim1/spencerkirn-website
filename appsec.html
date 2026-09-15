@@ -35,7 +35,11 @@
     button.secondary{background:#fff}button:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink)}button:disabled{opacity:.55;cursor:wait;transform:none;box-shadow:none}
     pre{min-height:94px;margin:18px 0 0;padding:16px;overflow:auto;border:1px solid var(--ink);background:var(--muted);font:600 .86rem/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word}
     .code-wrap{position:relative}.copy{position:absolute;top:8px;right:8px;min-height:auto;padding:7px 9px;font-size:.7rem;background:#fff}.result-ok{border-left:7px solid var(--green)}.result-bad{border-left:7px solid var(--red)}
-    .request-line{margin-top:16px;padding:14px;border:1px solid var(--ink);background:#111;color:#fff;font:600 .83rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+    .request-line{margin-top:16px;padding:14px;border:1px solid var(--ink);background:#111;color:#fff;font:600 .83rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+    .request-line::before{content:"REQUEST SENT";display:block;margin-bottom:9px;color:var(--orange);font:900 .72rem/1.2 "Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:.12em}
+    .score-scale{display:grid;grid-template-columns:repeat(4,1fr);margin:18px 0;border:2px solid var(--ink)}
+    .score-scale div{padding:14px;border-right:1px solid var(--ink)}.score-scale div:last-child{border-right:0}.score-scale strong{display:block;font-size:1.2rem}.score-low{background:#fee4e2}.score-mid{background:#fff3d6}.score-high{background:#dcfae6}
+    .plan-note{padding:12px 14px;border:1px solid var(--ink);background:#eef4ff;font-weight:700}
     .steps{margin:18px 0 0;padding:18px 18px 18px 40px;border:1px solid var(--ink);background:var(--muted)}
     .steps li{margin:8px 0}.steps strong{font-weight:900}
     .table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:14px;border:1px solid var(--ink);text-align:left;vertical-align:top}th{background:var(--ink);color:#fff;text-transform:uppercase}td:first-child{font-weight:900;white-space:nowrap}.phase{font-weight:900;text-transform:uppercase}
@@ -58,6 +62,8 @@
     <div class="pill-row">
       <span class="pill">Security Analytics</span><span class="pill">Custom WAF Rules</span>
       <span class="pill">Rate Limiting</span><span class="pill">Managed WAF</span>
+      <span class="pill">Managed Challenge</span><span class="pill">WAF Attack Score</span>
+      <span class="pill">Bot Score</span>
     </div>
   </header>
 
@@ -196,6 +202,91 @@
       </div>
     </section>
 
+    <section aria-labelledby="challenge-title">
+      <div class="section-heading"><h2 id="challenge-title">5. Managed Challenge</h2><span>Adaptive visitor verification</span></div>
+      <div class="grid">
+        <article class="card full">
+          <div class="number">5</div><h3>Define the rule</h3>
+          <div class="description"><strong>What this rule does</strong>Requests carrying the dedicated challenge marker receive Cloudflare's Managed Challenge action. Cloudflare evaluates browser signals and decides whether the visitor can pass automatically or should complete an interactive check.</div>
+          <p>Open <strong>Security → Security rules → Create rule → Custom rules</strong>.</p>
+          <ul><li><strong>Rule name:</strong> <code>DEMO — managed challenge</code></li><li><strong>Action:</strong> Managed Challenge</li></ul>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="challenge-expression">Copy</button><pre id="challenge-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and http.request.uri.query contains "cf-demo=managed-challenge")</pre></div>
+        </article>
+        <article class="card">
+          <h3>Open the matching request</h3>
+          <p>The button creates a unique request and opens it as a top-level browser navigation in a new tab. Interactive challenges require browser navigation rather than a background request.</p>
+          <div class="button-row"><button id="challenge-test" type="button">Open challenged request</button></div>
+          <div class="request-line" id="challenge-request">Request not sent</div>
+          <pre id="challenge-output" aria-live="polite">Enable the rule, then open the request. The Cloudflare response appears in the new tab.</pre>
+        </article>
+        <article class="card">
+          <h3>Find the challenge event</h3>
+          <ol class="steps"><li>Open <strong>Security → Analytics → Events</strong>.</li><li>Filter host to <code>spencerkirn.com</code> and path to <code>/appsec</code>.</li><li>Filter action to <strong>Managed Challenge</strong> or service to <strong>Custom rules</strong>.</li><li>Open the event and show the action, rule, URI, source, and Ray ID.</li></ol>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="attack-score-title">
+      <div class="section-heading"><h2 id="attack-score-title">6. WAF Attack Score</h2><span>Machine-learning classification</span></div>
+      <div class="grid">
+        <article class="card full">
+          <div class="number">6</div><h3>Signatures plus machine learning</h3>
+          <div class="description"><strong>What Attack Score adds</strong>Managed rules identify known exploit signatures. WAF Attack Score independently classifies each request from <strong>1 to 99</strong> based on malicious likelihood. Lower scores indicate greater attack likelihood.</div>
+          <div class="score-scale"><div class="score-low"><strong>1–20</strong>Attack</div><div class="score-low"><strong>21–50</strong>Likely attack</div><div class="score-mid"><strong>51–80</strong>Likely clean</div><div class="score-high"><strong>81–99</strong>Clean</div></div>
+          <p class="plan-note">Business plans expose <code>cf.waf.score.class</code>. Granular <code>cf.waf.score</code> values and vector-specific scores require Enterprise. Scores appear in Cloudflare analytics and logs; a static page cannot read them from the response.</p>
+        </article>
+        <article class="card">
+          <h3>Example score-based rules</h3>
+          <p><strong>Business — challenge attack-class requests:</strong></p>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="attack-class-expression">Copy</button><pre id="attack-class-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and cf.waf.score.class eq "attack")</pre></div>
+          <p><strong>Enterprise — challenge granular scores ≤ 20:</strong></p>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="attack-score-expression">Copy</button><pre id="attack-score-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and cf.waf.score le 20)</pre></div>
+        </article>
+        <article class="card">
+          <h3>Send a scored request</h3>
+          <p>This request combines SQL injection and XSS-like input in an inert query string. Cloudflare scores the request before it reaches this static page. Inspect Security Analytics to see the score or class available to your plan.</p>
+          <div class="button-row"><button id="attack-score-test" type="button">Send scored request</button></div>
+          <div class="request-line" id="attack-score-request">Request not sent</div>
+          <pre id="attack-score-output" aria-live="polite">Response not received</pre>
+        </article>
+        <article class="card full">
+          <h3>Find the Attack Score</h3>
+          <ol class="steps"><li>Open <strong>Security → Analytics</strong> and filter host/path to this demo.</li><li>Open <strong>Attack analysis</strong> or add the available WAF Attack Score filters.</li><li>Use the displayed request ID, timestamp, URI, and Ray ID to locate the request.</li><li>Compare the global score/class with SQLi and XSS vector scores where available.</li></ol>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="bot-score-title">
+      <div class="section-heading"><h2 id="bot-score-title">7. Bot Score</h2><span>Human and automated traffic</span></div>
+      <div class="grid">
+        <article class="card full">
+          <div class="number">7</div><h3>Classify automation</h3>
+          <div class="description"><strong>What Bot Score does</strong>Enterprise Bot Management assigns each request a score from <strong>1 to 99</strong>. A low score indicates likely automation; a high score indicates likely human traffic. Verified bots are identified separately so beneficial automation can be handled differently.</div>
+          <div class="score-scale"><div class="score-low"><strong>1</strong>Automated</div><div class="score-low"><strong>2–29</strong>Likely automated</div><div class="score-high"><strong>30–99</strong>Likely human</div><div><strong>Verified</strong>Known good bot</div></div>
+          <p class="plan-note">Granular <code>cf.bot_management.score</code> requires Enterprise Bot Management. Pro and higher can view grouped bot categories under <strong>Security → Bots</strong>. Cloudflare derives the score from request and behavioral signals; a page cannot force or directly read a score.</p>
+        </article>
+        <article class="card">
+          <h3>Example bot rule</h3>
+          <p>Challenge likely automated traffic on this demo path while excluding verified bots:</p>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="bot-expression">Copy</button><pre id="bot-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and cf.bot_management.score lt 30 and not cf.bot_management.verified_bot)</pre></div>
+          <p>Configure the action as <strong>Managed Challenge</strong>.</p>
+        </article>
+        <article class="card">
+          <h3>Compare browser and command-line traffic</h3>
+          <p>Send a genuine browser request here, then copy and run the command-line request from a terminal. The request details let you correlate each client in Bot Analytics.</p>
+          <div class="button-row"><button id="bot-browser-test" type="button">Send browser request</button></div>
+          <div class="request-line" id="bot-browser-request">Request not sent</div>
+          <pre id="bot-browser-output" aria-live="polite">Response not received</pre>
+          <p><strong>Command-line request:</strong></p>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="bot-curl-command">Copy</button><pre id="bot-curl-command">curl -i -A "Spencer-AppSec-Bot-Demo/1.0" "https://spencerkirn.com/appsec?cf-demo=bot-curl&amp;request-id=bot-curl-demo"</pre></div>
+        </article>
+        <article class="card full">
+          <h3>Find the Bot Score</h3>
+          <ol class="steps"><li>Open <strong>Security → Bots</strong> to compare bot categories, sources, paths, and user agents.</li><li>Filter to <code>/appsec</code> and the test time window.</li><li>With Enterprise Bot Management, inspect the granular score and verified-bot status.</li><li>Open <strong>Security → Analytics → Events</strong> to show any custom-rule action driven by that score.</li></ol>
+        </article>
+      </div>
+    </section>
+
     <section aria-labelledby="order-title">
       <div class="section-heading"><h2 id="order-title">Life of a request</h2><span>How Cloudflare evaluates traffic</span></div>
       <div class="card full">
@@ -233,7 +324,14 @@
       const id = makeId(marker);
       const query = new URLSearchParams({ 'cf-demo': marker, 'request-id': id, '_fresh': Date.now().toString(), ...params });
       const url = `/appsec?${query.toString()}`;
-      requestBox.textContent = `GET ${decodeURIComponent(url)}\nX-Demo-Request-ID: ${id}`;
+      requestBox.textContent = [
+        `METHOD: GET`,
+        `URL: ${location.origin}${decodeURIComponent(url)}`,
+        `QUERY: ${decodeURIComponent(query.toString())}`,
+        `HEADER X-Demo-Request-ID: ${id}`,
+        `HEADER Cache-Control: no-cache`,
+        `CLIENT: ${navigator.userAgent}`
+      ].join('\n');
       const started = performance.now();
       try {
         const response = await fetch(url, { cache: 'no-store', headers: { 'X-Demo-Request-ID': id, 'Cache-Control': 'no-cache' } });
@@ -262,16 +360,51 @@
       button:e.currentTarget, requestBox:document.querySelector('#custom-request'), output:document.querySelector('#custom-output'), marker:'custom-rule'
     }));
     document.querySelector('#sqli-test').addEventListener('click', e => sendRequest({
-      button:e.currentTarget, requestBox:document.querySelector('#sqli-request'), output:document.querySelector('#sqli-output'), marker:'managed-sqli', params:{ search:"' OR 1=1--" }
+      button:e.currentTarget, requestBox:document.querySelector('#sqli-request'), output:document.querySelector('#sqli-output'), marker:'managed-sqli', params:{ search:"' OR 1=1--", vector:'sqli', location:'query-string' }
     }));
     document.querySelector('#xss-test').addEventListener('click', e => sendRequest({
-      button:e.currentTarget, requestBox:document.querySelector('#xss-request'), output:document.querySelector('#xss-output'), marker:'managed-xss', params:{ search:'<script>alert("cf-demo")<\/script>' }
+      button:e.currentTarget, requestBox:document.querySelector('#xss-request'), output:document.querySelector('#xss-output'), marker:'managed-xss', params:{ search:'<script>alert("cf-demo")<\/script>', vector:'xss', location:'query-string' }
     }));
+    document.querySelector('#attack-score-test').addEventListener('click', e => sendRequest({
+      button:e.currentTarget,
+      requestBox:document.querySelector('#attack-score-request'),
+      output:document.querySelector('#attack-score-output'),
+      marker:'attack-score',
+      params:{ search:"' UNION SELECT username,password FROM users--", content:'<img src=x onerror=alert("cf-demo")>', vectors:'sqli,xss' }
+    }));
+    document.querySelector('#bot-browser-test').addEventListener('click', e => sendRequest({
+      button:e.currentTarget,
+      requestBox:document.querySelector('#bot-browser-request'),
+      output:document.querySelector('#bot-browser-output'),
+      marker:'bot-browser',
+      params:{ client:'browser', comparison:'bot-score' }
+    }));
+    document.querySelector('#challenge-test').addEventListener('click', e => {
+      const id=makeId('managed-challenge');
+      const query=new URLSearchParams({'cf-demo':'managed-challenge','request-id':id,'_fresh':Date.now().toString()});
+      const url=`/appsec?${query.toString()}`;
+      document.querySelector('#challenge-request').textContent=[
+        'METHOD: GET',
+        `URL: ${location.origin}${decodeURIComponent(url)}`,
+        `QUERY: ${decodeURIComponent(query.toString())}`,
+        'NAVIGATION: New top-level browser tab',
+        `CLIENT: ${navigator.userAgent}`
+      ].join('\n');
+      document.querySelector('#challenge-output').textContent=JSON.stringify({request_id:id,action:'Opening a top-level navigation',expected:'Cloudflare evaluates Managed Challenge in the new tab'},null,2);
+      window.open(url,'_blank','noopener');
+    });
 
     document.querySelector('#rate-test').addEventListener('click', async e => {
       const button=e.currentTarget, requestBox=document.querySelector('#rate-request'), container=document.querySelector('#rate-results');
       button.disabled=true; const run=makeId('rate');
-      requestBox.textContent=`12 × GET /appsec?rate-test=${run}-[1…12]`;
+      requestBox.textContent=[
+        'METHOD: GET (12 sequential requests)',
+        `URL PATTERN: ${location.origin}/appsec?rate-test=${run}-[1…12]`,
+        `COUNTING KEY: source IP + matching URI`,
+        `HEADER X-Demo-Request-ID: ${run}-[1…12]`,
+        'HEADER Cache-Control: no-cache',
+        `CLIENT: ${navigator.userAgent}`
+      ].join('\n');
       container.innerHTML='<div class="rate-summary">Sending 12 requests…</div>';
       const results=[];
       try {
