@@ -1,0 +1,32 @@
+name: AppSec scheduled traffic (every 5 minutes)
+
+on:
+  schedule:
+    # GitHub schedules use UTC. Offset from minute 0 to reduce congestion.
+    - cron: "3-58/5 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: appsec-scheduled-traffic
+  cancel-in-progress: false
+
+jobs:
+  generate-traffic:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [browser, api, bot, attack]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      TARGET_ORIGIN: https://spencerkirn.com
+      PROFILE: ${{ matrix.profile }}
+      VOLUME: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Generate labeled traffic for ${{ matrix.profile }} profile
+        run: node scripts/appsec-traffic-generator-v2.mjs
