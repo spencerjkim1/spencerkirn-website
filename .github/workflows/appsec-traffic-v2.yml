@@ -1,16 +1,9 @@
-name: AppSec diverse synthetic traffic v2
+name: AppSec scheduled traffic every 5 minutes
 
 on:
-  schedule:
-    - cron: "8,23,38,53 * * * *"
   workflow_dispatch:
-    inputs:
-      requests_per_profile:
-        description: "Requests for each of four profiles (1-100)"
-        required: true
-        default: 30
-        type: number
-
+  schedule:
+    - cron: "3,8,13,18,23,28,33,38,43,48,53,58 * * * *"
 permissions:
   contents: read
 
