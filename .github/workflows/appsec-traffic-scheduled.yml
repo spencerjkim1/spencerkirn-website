@@ -1,10 +1,9 @@
-name: AppSec scheduled traffic (every 5 minutes)
+name: AppSec scheduled traffic every 5 minutes
 
 on:
+  workflow_dispatch:
   schedule:
-    # GitHub schedules use UTC. Offset from minute 0 to reduce congestion.
-    - cron: "3-58/5 * * * *"
-
+    - cron: "3,8,13,18,23,28,33,38,43,48,53,58 * * * *"
 permissions:
   contents: read
 
