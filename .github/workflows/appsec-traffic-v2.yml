@@ -1,0 +1,39 @@
+name: AppSec diverse synthetic traffic v2
+
+on:
+  schedule:
+    # Four runs per hour, offset from the top of the hour.
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+    inputs:
+      requests_per_profile:
+        description: "Requests for each of four profiles (1-100)"
+        required: true
+        default: 30
+        type: number
+
+permissions:
+  contents: read
+
+concurrency:
+  group: appsec-diverse-synthetic-traffic
+  cancel-in-progress: false
+
+jobs:
+  generate-traffic:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [browser, api, bot, attack]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      TARGET_ORIGIN: https://spencerkirn.com
+      PROFILE: ${{ matrix.profile }}
+      VOLUME: ${{ inputs.requests_per_profile || 30 }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Generate labeled traffic for ${{ matrix.profile }} profile
+        run: node scripts/appsec-traffic-generator-v2.mjs
