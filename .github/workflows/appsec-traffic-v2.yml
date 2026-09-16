@@ -2,8 +2,7 @@ name: AppSec diverse synthetic traffic v2
 
 on:
   schedule:
-    # Four runs per hour, offset from the top of the hour.
-    - cron: "7,22,37,52 * * * *"
+    - cron: "8,23,38,53 * * * *"
   workflow_dispatch:
     inputs:
       requests_per_profile:
