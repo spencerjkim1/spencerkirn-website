@@ -1,10 +1,13 @@
-name: AppSec scheduled traffic every 5 minutes
+name: AppSec manual traffic generator
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "3,8,13,18,23,28,33,38,43,48,53,58 * * * *"
-permissions:
+    inputs:
+      requests_per_profile:
+        description: "Requests for each of four profiles (1-100)"
+        required: true
+        default: 30
+        type: numberpermissions:
   contents: read
 
 concurrency:
