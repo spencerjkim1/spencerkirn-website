@@ -22,7 +22,7 @@ jobs:
     env:
       TARGET_ORIGIN: https://spencerkirn.com
       PROFILE: ${{ matrix.profile }}
-      VOLUME: 30
+      VOLUME: 100
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
