@@ -72,7 +72,7 @@ async function send(template, sequence) {
     sequence: String(sequence),
     ...template.params
   });
-  const url = `${TARGET}/appsec?${query}`;
+  const url = `${TARGET}/demo/appsec?${query}`;
   const started = performance.now();
 
   try {

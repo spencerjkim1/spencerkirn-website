@@ -73,7 +73,7 @@
       <div class="grid">
         <article class="card">
           <div class="number">1</div><h3>Send a fresh request</h3>
-          <div class="description"><strong>What this does</strong>Each click sends a new HTTP GET request to <code>/appsec</code> with a random request ID, timestamp, and cache-bypass value. Cloudflare processes it as a new edge request and returns a new response. The visitor source IP remains the same because the request comes from this browser, but the URL and request identifier change every time.</div>
+          <div class="description"><strong>What this does</strong>Each click sends a new HTTP GET request to <code>/demo/appsec</code> with a random request ID, timestamp, and cache-bypass value. Cloudflare processes it as a new edge request and returns a new response. The visitor source IP remains the same because the request comes from this browser, but the URL and request identifier change every time.</div>
           <div class="button-row"><button id="normal-test" type="button">Send new request</button></div>
           <div class="request-line" id="normal-request">Request not sent</div>
           <pre id="normal-output" aria-live="polite">Response not received</pre>
@@ -83,7 +83,7 @@
           <ol>
             <li>Send two or three requests and point out the unique request ID and URL.</li>
             <li>In Cloudflare, open <strong>Security → Analytics</strong>.</li>
-            <li>Filter <strong>Host</strong> to <code>spencerkirn.com</code> and URI path to <code>/appsec</code>.</li>
+            <li>Filter <strong>Host</strong> to <code>spencerkirn.com</code> and URI path to <code>/demo/appsec</code>.</li>
             <li>Show that Security Analytics includes all incoming HTTP requests, including allowed traffic.</li>
             <li>Use the displayed Ray ID, when available in the browser response, to correlate the exact request.</li>
           </ol>
@@ -96,10 +96,10 @@
       <div class="grid">
         <article class="card full">
           <div class="number">2</div><h3>Define the rule</h3>
-          <div class="description"><strong>What this rule does</strong>It blocks only requests to <code>spencerkirn.com/appsec</code> that contain the demonstration marker <code>cf-demo=custom-rule</code>. Ordinary site traffic does not match it.</div>
+          <div class="description"><strong>What this rule does</strong>It blocks only requests to <code>spencerkirn.com/demo/appsec</code> that contain the demonstration marker <code>cf-demo=custom-rule</code>. Ordinary site traffic does not match it.</div>
           <p>In Cloudflare, open <strong>Security → Security rules → Create rule → Custom rules</strong>.</p>
           <ul><li><strong>Rule name:</strong> <code>DEMO — block custom query</code></li><li><strong>Action:</strong> Block</li></ul>
-          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="custom-expression">Copy</button><pre id="custom-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and http.request.uri.query contains "cf-demo=custom-rule")</pre></div>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="custom-expression">Copy</button><pre id="custom-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/demo/appsec") and http.request.uri.query contains "cf-demo=custom-rule")</pre></div>
         </article>
         <article class="card">
           <h3>Send the matching request</h3>
@@ -112,7 +112,7 @@
           <h3>Find the blocked event</h3>
           <ol class="steps">
             <li>Open <strong>Security → Analytics → Events</strong>.</li>
-            <li>Filter host to <code>spencerkirn.com</code> and path to <code>/appsec</code>.</li>
+            <li>Filter host to <code>spencerkirn.com</code> and path to <code>/demo/appsec</code>.</li>
             <li>Filter service to <strong>Custom rules</strong>.</li>
             <li>Open the sampled event and show the action, rule name, URI, source, and Ray ID.</li>
           </ol>
@@ -125,7 +125,7 @@
       <div class="grid">
         <article class="card">
           <div class="number">3</div><h3>Define the rule</h3>
-          <div class="description"><strong>What this rule does</strong>It counts requests from each source IP when the request targets <code>/appsec</code> and contains <code>rate-test=</code>. After the configured threshold is exceeded, Cloudflare blocks additional matching requests for the mitigation period.</div>
+          <div class="description"><strong>What this rule does</strong>It counts requests from each source IP when the request targets <code>/demo/appsec</code> and contains <code>rate-test=</code>. After the configured threshold is exceeded, Cloudflare blocks additional matching requests for the mitigation period.</div>
           <ul>
             <li><strong>Name:</strong> <code>DEMO — appsec burst</code></li>
             <li><strong>Counter characteristic:</strong> IP</li>
@@ -134,7 +134,7 @@
             <li><strong>Mitigation timeout:</strong> 10 seconds, if shown</li>
             <li><strong>Cached assets:</strong> Include them</li>
           </ul>
-          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="rate-expression">Copy</button><pre id="rate-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and http.request.uri.query contains "rate-test=")</pre></div>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="rate-expression">Copy</button><pre id="rate-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/demo/appsec") and http.request.uri.query contains "rate-test=")</pre></div>
         </article>
         <article class="card">
           <h3>Run 12 requests</h3>
@@ -147,7 +147,7 @@
           <h3>Find the rate-limit events</h3>
           <ol class="steps">
             <li>Open <strong>Security → Analytics → Events</strong>.</li>
-            <li>Filter host to <code>spencerkirn.com</code> and path to <code>/appsec</code>.</li>
+            <li>Filter host to <code>spencerkirn.com</code> and path to <code>/demo/appsec</code>.</li>
             <li>Filter service to <strong>Rate limiting rules</strong>.</li>
             <li>Open an event and show the action, matching rule, client source, URI, and Ray ID.</li>
           </ol>
@@ -168,7 +168,7 @@
             <li>Edit the deployment scope to the expression below.</li>
             <li>Review the ruleset's configured actions before running the requests.</li>
           </ol>
-          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="managed-expression">Copy</button><pre id="managed-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec"))</pre></div>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="managed-expression">Copy</button><pre id="managed-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/demo/appsec"))</pre></div>
           <p><strong>Note:</strong> This is the ruleset deployment scope. SQL injection and cross-site scripting detection are performed by the enabled managed rules, rather than by one hand-written expression.</p>
         </article>
 
@@ -194,7 +194,7 @@
           <h3>Find the managed WAF events</h3>
           <ol class="steps">
             <li>Open <strong>Security → Analytics → Events</strong>.</li>
-            <li>Filter host to <code>spencerkirn.com</code> and path to <code>/appsec</code>.</li>
+            <li>Filter host to <code>spencerkirn.com</code> and path to <code>/demo/appsec</code>.</li>
             <li>Filter service to <strong>Managed rules</strong>.</li>
             <li>Open each sampled event and show the ruleset, rule ID and description, action, URI, source, and Ray ID.</li>
           </ol>
@@ -210,7 +210,7 @@
           <div class="description"><strong>What this rule does</strong>Requests carrying the dedicated challenge marker receive Cloudflare's Managed Challenge action. Cloudflare evaluates browser signals and decides whether the visitor can pass automatically or should complete an interactive check.</div>
           <p>Open <strong>Security → Security rules → Create rule → Custom rules</strong>.</p>
           <ul><li><strong>Rule name:</strong> <code>DEMO — managed challenge</code></li><li><strong>Action:</strong> Managed Challenge</li></ul>
-          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="challenge-expression">Copy</button><pre id="challenge-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and http.request.uri.query contains "cf-demo=managed-challenge")</pre></div>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="challenge-expression">Copy</button><pre id="challenge-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/demo/appsec") and http.request.uri.query contains "cf-demo=managed-challenge")</pre></div>
         </article>
         <article class="card">
           <h3>Open the matching request</h3>
@@ -221,7 +221,7 @@
         </article>
         <article class="card">
           <h3>Find the challenge event</h3>
-          <ol class="steps"><li>Open <strong>Security → Analytics → Events</strong>.</li><li>Filter host to <code>spencerkirn.com</code> and path to <code>/appsec</code>.</li><li>Filter action to <strong>Managed Challenge</strong> or service to <strong>Custom rules</strong>.</li><li>Open the event and show the action, rule, URI, source, and Ray ID.</li></ol>
+          <ol class="steps"><li>Open <strong>Security → Analytics → Events</strong>.</li><li>Filter host to <code>spencerkirn.com</code> and path to <code>/demo/appsec</code>.</li><li>Filter action to <strong>Managed Challenge</strong> or service to <strong>Custom rules</strong>.</li><li>Open the event and show the action, rule, URI, source, and Ray ID.</li></ol>
         </article>
       </div>
     </section>
@@ -238,9 +238,9 @@
         <article class="card">
           <h3>Example score-based rules</h3>
           <p><strong>Business — challenge attack-class requests:</strong></p>
-          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="attack-class-expression">Copy</button><pre id="attack-class-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and cf.waf.score.class eq "attack")</pre></div>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="attack-class-expression">Copy</button><pre id="attack-class-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/demo/appsec") and cf.waf.score.class eq "attack")</pre></div>
           <p><strong>Enterprise — challenge granular scores ≤ 20:</strong></p>
-          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="attack-score-expression">Copy</button><pre id="attack-score-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and cf.waf.score le 20)</pre></div>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="attack-score-expression">Copy</button><pre id="attack-score-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/demo/appsec") and cf.waf.score le 20)</pre></div>
         </article>
         <article class="card">
           <h3>Send a scored request</h3>
@@ -268,7 +268,7 @@
         <article class="card">
           <h3>Example bot rule</h3>
           <p>Challenge likely automated traffic on this demo path while excluding verified bots:</p>
-          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="bot-expression">Copy</button><pre id="bot-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/appsec") and cf.bot_management.score lt 30 and not cf.bot_management.verified_bot)</pre></div>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="bot-expression">Copy</button><pre id="bot-expression">(http.host eq "spencerkirn.com" and starts_with(http.request.uri.path, "/demo/appsec") and cf.bot_management.score lt 30 and not cf.bot_management.verified_bot)</pre></div>
           <p>Configure the action as <strong>Managed Challenge</strong>.</p>
         </article>
         <article class="card">
@@ -278,11 +278,11 @@
           <div class="request-line" id="bot-browser-request">Request not sent</div>
           <pre id="bot-browser-output" aria-live="polite">Response not received</pre>
           <p><strong>Command-line request:</strong></p>
-          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="bot-curl-command">Copy</button><pre id="bot-curl-command">curl -i -A "Spencer-AppSec-Bot-Demo/1.0" "https://spencerkirn.com/appsec?cf-demo=bot-curl&amp;request-id=bot-curl-demo"</pre></div>
+          <div class="code-wrap"><button class="copy secondary" type="button" data-copy="bot-curl-command">Copy</button><pre id="bot-curl-command">curl -i -A "Spencer-AppSec-Bot-Demo/1.0" "https://spencerkirn.com/demo/appsec?cf-demo=bot-curl&amp;request-id=bot-curl-demo"</pre></div>
         </article>
         <article class="card full">
           <h3>Find the Bot Score</h3>
-          <ol class="steps"><li>Open <strong>Security → Bots</strong> to compare bot categories, sources, paths, and user agents.</li><li>Filter to <code>/appsec</code> and the test time window.</li><li>With Enterprise Bot Management, inspect the granular score and verified-bot status.</li><li>Open <strong>Security → Analytics → Events</strong> to show any custom-rule action driven by that score.</li></ol>
+          <ol class="steps"><li>Open <strong>Security → Bots</strong> to compare bot categories, sources, paths, and user agents.</li><li>Filter to <code>/demo/appsec</code> and the test time window.</li><li>With Enterprise Bot Management, inspect the granular score and verified-bot status.</li><li>Open <strong>Security → Analytics → Events</strong> to show any custom-rule action driven by that score.</li></ol>
         </article>
       </div>
     </section>
@@ -323,7 +323,7 @@
       output.textContent = 'Sending request…';
       const id = makeId(marker);
       const query = new URLSearchParams({ 'cf-demo': marker, 'request-id': id, '_fresh': Date.now().toString(), ...params });
-      const url = `/appsec?${query.toString()}`;
+      const url = `/demo/appsec?${query.toString()}`;
       requestBox.textContent = [
         `METHOD: GET`,
         `URL: ${location.origin}${decodeURIComponent(url)}`,
@@ -382,7 +382,7 @@
     document.querySelector('#challenge-test').addEventListener('click', e => {
       const id=makeId('managed-challenge');
       const query=new URLSearchParams({'cf-demo':'managed-challenge','request-id':id,'_fresh':Date.now().toString()});
-      const url=`/appsec?${query.toString()}`;
+      const url=`/demo/appsec?${query.toString()}`;
       document.querySelector('#challenge-request').textContent=[
         'METHOD: GET',
         `URL: ${location.origin}${decodeURIComponent(url)}`,
@@ -399,7 +399,7 @@
       button.disabled=true; const run=makeId('rate');
       requestBox.textContent=[
         'METHOD: GET (12 sequential requests)',
-        `URL PATTERN: ${location.origin}/appsec?rate-test=${run}-[1…12]`,
+        `URL PATTERN: ${location.origin}/demo/appsec?rate-test=${run}-[1…12]`,
         `COUNTING KEY: source IP + matching URI`,
         `HEADER X-Demo-Request-ID: ${run}-[1…12]`,
         'HEADER Cache-Control: no-cache',
@@ -412,7 +412,7 @@
           const id=`${run}-${i}`;
           const query=new URLSearchParams({'rate-test':id,'request-id':id,'_fresh':`${Date.now()}-${i}`});
           const started=performance.now();
-          const response=await fetch(`/appsec?${query}`,{cache:'no-store',headers:{'X-Demo-Request-ID':id,'Cache-Control':'no-cache'}});
+          const response=await fetch(`/demo/appsec?${query}`,{cache:'no-store',headers:{'X-Demo-Request-ID':id,'Cache-Control':'no-cache'}});
           results.push({request:i,status:response.status,outcome:response.ok?'ACCEPTED':'BLOCKED',ray:response.headers.get('cf-ray')||'View in Events',ms:Math.round(performance.now()-started)});
           renderRateResults(container,results);
         }
