@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "spencerkirn-website",
+  "main": "worker.js",
+  "compatibility_date": "2026-11-02",
+  "assets": {
+    "directory": "./.site",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "build": {
+    "command": "npm run build",
+    "watch_dir": ["index.html", "demo.html", "assets", "demo", "_redirects"]
+  },
+  "routes": [
+    { "pattern": "spencerkirn.com", "custom_domain": true }
+  ]
+}

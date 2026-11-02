@@ -169,37 +169,36 @@
         <!-- Spotify Section -->
         <section id="spotify">
             <h2>SPOTIFY</h2>
-            <article class="playlist" aria-labelledby="on-repeat-heading">
-                <div class="playlist-heading"><h3 id="on-repeat-heading">On Repeat</h3></div>
+            <article class="listening-block" aria-labelledby="currently-playing-heading">
+                <div class="playlist-heading"><h3 id="currently-playing-heading">Currently playing</h3><span id="playback-state" class="playback-state" hidden></span></div>
+                <p class="playlist-note" id="currently-playing-status" role="status">Loading Spotify…</p>
+                <a id="current-track" class="current-track" target="_blank" rel="noopener noreferrer" hidden>
+                    <img id="current-art" width="96" height="96" alt="" hidden>
+                    <span><strong id="current-name"></strong><span id="current-artist" class="track-artist"></span><span class="track-source">Listen on Spotify ↗</span></span>
+                </a>
+            </article>
+            <article class="listening-block" aria-labelledby="recently-played-heading">
+                <div class="playlist-heading"><h3 id="recently-played-heading">Recently played</h3><label class="history-limit" for="history-limit">Show <select id="history-limit"><option value="20" selected>20 songs</option><option value="50">50 songs</option><option value="100">100 songs</option></select></label></div>
+                <p class="playlist-note" id="recently-played-status" role="status">Loading listening history…</p>
+                <div class="history-widget" id="history-widget" role="region" aria-labelledby="recently-played-heading" aria-describedby="recently-played-status" tabindex="0" hidden>
+                    <ol id="recently-played-tracks" class="track-list"></ol>
+                </div>
+            </article>
+            <div class="playlist">
                 <div class="content">
                     <iframe title="On Repeat playlist on Spotify" data-testid="embed-iframe" style="border-radius:0" src="https://open.spotify.com/embed/playlist/37i9dQZF1EppctzT1uUNeh?utm_source=generator&si=91da0a2a12354925" width="100%" height="400" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                 </div>
-            </article>
-            <article class="playlist" aria-labelledby="allma-heading">
-                <div class="playlist-heading"><h3 id="allma-heading">allma</h3></div>
-                <div class="recent-tracks" id="recent-tracks" hidden>
-                    <div class="track-list-heading"><h4>Recently added</h4><span>Newest first ↓</span></div>
-                    <p id="playlist-updated" class="playlist-note"></p>
-                    <ol id="allma-tracks" class="track-list"></ol>
-                    <button type="button" id="more-tracks" class="text-button" hidden>Show more songs ↓</button>
-                </div>
-                <div class="content">
-                    <iframe title="allma playlist on Spotify" style="border-radius:0" src="https://open.spotify.com/embed/playlist/1CQm2Hmuu6sIQ8N3wVWwXw?utm_source=generator" width="100%" height="400" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                </div>
-                <p class="playlist-note" id="playlist-status" role="status">The player follows Spotify’s original playlist order.</p>
-                <a class="text-link" href="https://open.spotify.com/playlist/1CQm2Hmuu6sIQ8N3wVWwXw" target="_blank" rel="noopener noreferrer">Open allma on Spotify ↗</a>
-            </article>
+            </div>
+            <p class="profile-link"><a class="text-link" href="https://open.spotify.com/user/31wib43cvruufuubomgqj5v5h4t4" target="_blank" rel="noopener noreferrer">Spotify</a></p>
         </section>
 
         <!-- Letterboxd Section -->
         <section id="letterboxd">
             <h2>LETTERBOXD</h2>
-            <div class="content">
-                <a href="https://letterboxd.com/spencerjkim/" target="_blank" rel="noopener noreferrer"
-                   style="color: #000; text-decoration: none; font-size: 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
-                   VIEW LETTERBOXD →
-                </a>
-            </div>
+            <div class="playlist-heading"><h3>Recently watched</h3></div>
+            <p class="playlist-note" id="films-status" role="status">Loading recent films…</p>
+            <div class="film-grid" id="recent-films"></div>
+            <p class="profile-link"><a class="text-link" href="https://letterboxd.com/spencerjkim/" target="_blank" rel="noopener noreferrer">Letterboxd</a></p>
         </section>
         <section id="demo">
             <h2>DEMOS</h2>
@@ -215,7 +214,7 @@
 
     <!-- Footer -->
     <footer>
-        <span>Thanks for wandering.</span><a href="#">Back to the entrance ↑</a><span>CLOUDFLARE PAGES</span>
+        <span>Thanks for wandering.</span><a href="#">Back to the entrance ↑</a><span>CLOUDFLARE WORKERS</span>
     </footer>
 </body>
 </html>

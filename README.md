@@ -1,58 +1,111 @@
 # Spencer Kim’s website
 
-Static HTML, CSS, and JavaScript. No build step or browser-side credentials.
+Static HTML/CSS/JavaScript served by the existing Cloudflare **Worker** named
+`spencerkirn-website` (not a Pages project), with two server-side API handlers. The build
+copies only approved public files to `.site`; credentials and server code are
+never served as static assets. Navigation: Spotify 01, Letterboxd 02, Demos 03. Gallery is removed;
+its starter SVGs remain in `assets/gallery/` for possible future use.
 
 ## Preview and test
 
 ```sh
-python3 -m http.server 8080
-node --test scripts/sync-spotify.test.mjs
+npm install
+npm run dev
+npm test
 ```
 
-Open http://localhost:8080. Existing `/demo` routing is unchanged.
+Open http://localhost:8081. Wrangler runs both the static site and `/api/*`.
+`npm run dev` prepares `.site` first and watches the static source files.
+**Never serve the repository root with a static server**, because local `.dev.vars`
+contains credentials. A plain static server pointed at `.site` still shows On Repeat and the profile links, but cannot
+serve live listening activity or the Letterboxd feed. Existing `/demo` routing
+is unchanged. Only `/api/*` runs the Worker before assets. `wrangler.jsonc`
+binds the prepared public directory as `ASSETS`; server code remains outside it.
 
-## Navigation
+## Spotify
 
-The page starts with Spotify 01, followed by Letterboxd 02 and Demos 03.
-The Gallery is removed for now; its starter SVGs remain in `assets/gallery/`
-for possible future use. Room subtitles and playlist descriptions are omitted.
+Order: **Currently playing**, **Recently played**, the On Repeat player without
+an extra heading, then the profile link labeled **Spotify**. The allma embed,
+playlist-data file, and scheduled sync are removed.
 
-## allma: newest additions first
+Currently playing shows album art, song, artist, Spotify link, and Playing/Paused
+state. Recently played has a 20/50/100-song selector inside a bounded, keyboard-
+scrollable widget. Each row includes square album art, song title, artist, and
+timestamp (including on mobile). Missing covers have a neutral fallback. Changing
+the selector resets the widget to the newest play; refreshes preserve its scroll
+position. The page stays compact regardless of the selected count.
+History is sorted by `played_at`, newest first, and repeated plays are retained.
+These are listening events Spotify reports, not a complete real-time audit;
+Spotify’s recently-played endpoint can lag playback and excludes podcasts.
+Spotify allows 50 events per API request; the function requests a second, older
+page to show up to 100 plays when available. Spotify may return fewer than the
+selected number. The UI displays the actual count rather than inventing entries.
+This is not a persistent 100-song archive. Identical duplicate events are removed,
+but repeat listens at different timestamps are retained. If the older-page
+request fails, the latest available plays remain visible.
+An idle account shows “Nothing playing right now,” not a fake live song.
 
-On Repeat stays first; allma is underneath. Both official Spotify players work
-immediately. **Spotify embeds do not expose a playlist-sort setting.** A separate
-text track list above the allma player displays songs by `added_at` descending
-(not album release date).
-It links songs to Spotify and loads 20 rows at a time. The player itself retains
-Spotify’s order; this does not reorder or otherwise modify your real playlist.
+### One-time connection
 
-The list is initially hidden until the first sync; both players remain available.
-To connect it:
+1. Create an app at the [Spotify developer dashboard](https://developer.spotify.com/dashboard).
+   Spotify development-mode access may require Premium and account allowlisting.
+2. In the app settings, save redirect URI **`http://127.0.0.1:8888/callback`**.
+   In your own interactive Terminal, run `npm run spotify:connect`. Paste the
+   Client ID and Client Secret when prompted (secret input is hidden). The helper
+   opens Spotify to authorize **your own listening account** with scopes
+   **`user-read-currently-playing user-read-recently-played`**. It validates a
+   random callback state, exchanges the code locally, and saves all three
+   credentials to `.dev.vars` with owner-only permissions. Tokens are never
+   printed. Unrelated `.dev.vars` settings are preserved. Approval times out
+   after five minutes; rerun the command if needed. Restart `npm run dev` to
+   test locally. An old playlist-only token will not grant these scopes.
+3. Add these **secrets to the existing Cloudflare Worker**, under Settings →
+   Variables and Secrets:
+    - `SPOTIFY_CLIENT_ID`
+    - `SPOTIFY_CLIENT_SECRET`
+    - `SPOTIFY_REFRESH_TOKEN`
+   If `.dev.vars` contains only these three settings, you can upload them without
+   copying tokens through the clipboard: run `npx wrangler login`, then
+   `npx wrangler secret bulk .dev.vars --name spencerkirn-website`.
+   Choose the Cloudflare account that owns this Worker (Spencer-Sandbox).
+   Do not bulk-upload a file containing unrelated secrets. `wrangler pages`
+   commands do not apply to this site.
+4. Deploy the new Worker code after setting the secrets. For Workers Builds/Git
+   integration, use build command **`npm run build`** and deploy command
+   **`npx wrangler deploy`**. Wrangler also runs the configured build automatically
+   before direct CLI deployment. No Pages build-output setting is needed.
+   No GitHub Actions secrets or scheduled jobs are needed.
 
-1. Create an app in the [Spotify developer dashboard](https://developer.spotify.com/dashboard).
-   Spotify may require Premium and developer-mode account allowlisting. Authorize
-   as the owner/collaborator of allma; current development-mode playlist access is
-   restricted. See [Spotify’s February 2026 migration guide](https://developer.spotify.com/documentation/web-api/references/changes/february-2026).
-2. Use Spotify’s [Authorization Code flow](https://developer.spotify.com/documentation/web-api/tutorials/code-flow)
-   to obtain a refresh token for that account with `playlist-read-private` scope
-   (also `playlist-read-collaborative` if applicable). Use your own app; do not
-   give credentials to third-party token generators or paste them into this repo.
-3. In GitHub → repository **Settings → Secrets and variables → Actions**, add
-   repository **secrets** `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, and
-   `SPOTIFY_REFRESH_TOKEN`. Add a repository **variable** `SPOTIFY_SYNC_ENABLED`
-   set to `true`.
-4. Once these changes are on the default branch, run **Actions → Sync allma
-   playlist → Run workflow**. It then refreshes roughly every six hours.
-   Branch rules must permit the workflow bot to commit `data/allma.json`.
-   Cloudflare Pages should deploy these commits through the existing Git integration.
+For local testing, put the same values in a `.dev.vars` file (gitignored), then
+restart `npm run dev`. Never commit credentials or paste them into chat.
+Reauthorize if Spotify revokes/rotates the refresh token or scopes change.
 
-Only public song names, artist names, Spotify links, added dates, and playlist
-positions are committed to `data/allma.json`. All pages are fetched before sorting;
-removed/local/non-song entries are skipped, duplicates are preserved, and unknown
-added dates appear last. Failed syncs preserve the previous file. Unchanged tracks
-do not create a commit; the displayed update date is the last changed snapshot.
+**Privacy:** Connecting this feature deliberately publishes your current song
+and up to 100 recent listening events, including timestamps, to anyone visiting
+the site or `/api/spotify`. It is a display of the owner's account, not a
+visitor login. Remove the secrets to disable it, then allow the 30-second edge
+cache to expire. No history is committed to Git or retained in a database.
 
-The workflow is opt-in and makes read-only Spotify requests. It requires Node 22
-and no npm dependencies. To sync locally, set the same three environment variables
-and run `node scripts/sync-spotify.mjs`. Never commit tokens. If Spotify rotates or
-revokes your refresh token, re-authorize and update the GitHub secret.
+Tokens are exchanged only in the server-side function and never sent to the
+browser. Only normalized song metadata is returned. The public response is
+edge-cached for up to 30 seconds, and the visible page polls every 30 seconds;
+it pauses polling in background tabs. Offline, unconfigured, paused, idle,
+partial failure, and API error states are handled separately.
+
+## Letterboxd
+
+The last four diary entries appear as posters with film titles, years, watched
+dates, ratings, and links to Spencer’s reviews. Data comes from the public
+https://letterboxd.com/spencerjkim/rss/ feed via `/api/letterboxd`.
+No API key or Letterboxd login is needed. The feed is cached for five minutes at
+the edge. List/non-film items are excluded and diary entries are sorted by
+watched date, then publication date. The profile link remains available if the
+feed or a poster fails. Raw review HTML is never inserted into the page.
+
+The visible page refreshes films every five minutes and checks again when you
+return to the tab. Once you **log a film in your Letterboxd diary**, it can
+automatically enter the newest four cards, usually within 5–10 minutes plus any
+delay in Letterboxd’s RSS feed. Merely watching a film without logging it cannot
+be detected. Refresh failures retain the last loaded posters with a notice.
+Unchanged cards are not replaced, preserving keyboard focus. Both live features
+require deployment of the Worker API handlers; Spotify also requires authorization.
