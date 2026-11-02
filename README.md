@@ -34,6 +34,11 @@ The artwork is decorative and does not block text selection or navigation.
 
 ## Spotify
 
+Spotify responses are never stored in the browser or automatic CDN cache. Only
+the Worker's explicit Cache API keeps a normalized public snapshot for 30 seconds.
+The frontend uses `cache: 'no-store'` so a previously cached response cannot freeze
+the widget on old songs. Its script URL is versioned when this request policy changes.
+
 Order: **Currently playing**, **Recently played**, the On Repeat player without
 an extra heading, then the profile link labeled **Spotify**. The allma embed,
 playlist-data file, and scheduled sync are removed.
@@ -107,8 +112,9 @@ partial failure, and API error states are handled separately.
 The last four diary entries appear as posters with film titles, years, watched
 dates, ratings, and links to Spencer’s reviews. Data comes from the public
 https://letterboxd.com/spencerjkim/rss/ feed via `/api/letterboxd`.
-No API key or Letterboxd login is needed. The feed is cached for five minutes at
-the edge. List/non-film items are excluded and diary entries are sorted by
+No API key or Letterboxd login is needed. Only the explicit Worker cache keeps
+the feed for five minutes; browser and automatic CDN caching are disabled, and
+the frontend fetches with `cache: 'no-store'`. List/non-film items are excluded and diary entries are sorted by
 watched date, then publication date. The profile link remains available if the
 feed or a poster fails. Raw review HTML is never inserted into the page.
 

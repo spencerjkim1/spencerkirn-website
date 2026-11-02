@@ -98,7 +98,7 @@ async function loadSpotify() {
     spotifyLoading = true;
     let refresh = true;
     try {
-        const response = await fetch('/api/spotify', { signal: AbortSignal.timeout(35_000) });
+        const response = await fetch('/api/spotify?v=2', { cache: 'no-store', signal: AbortSignal.timeout(35_000) });
         if (!response.ok) throw new Error('Activity unavailable');
         const data = await response.json();
         if (data.status === 'not-configured') {
@@ -157,7 +157,7 @@ async function loadFilms() {
     filmsLoading = true;
     const status = document.querySelector('#films-status');
     try {
-        const response = await fetch('/api/letterboxd', { signal: AbortSignal.timeout(15_000) });
+        const response = await fetch('/api/letterboxd?v=2', { cache: 'no-store', signal: AbortSignal.timeout(15_000) });
         if (!response.ok) throw new Error('Feed unavailable');
         const documentXML = new DOMParser().parseFromString(await response.text(), 'application/xml');
         if (documentXML.querySelector('parsererror') || !documentXML.querySelector('rss')) throw new Error('Invalid feed');

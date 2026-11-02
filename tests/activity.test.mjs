@@ -91,6 +91,51 @@ test('unconfigured API response is not cached', async () => {
     assert.equal((await response.json()).status, 'not-configured');
 });
 
+function installCache(t, cache) {
+    const original = Object.getOwnPropertyDescriptor(globalThis, 'caches');
+    Object.defineProperty(globalThis, 'caches', { configurable: true, value: { default: cache } });
+    t.after(() => {
+        if (original) Object.defineProperty(globalThis, 'caches', original);
+        else delete globalThis.caches;
+    });
+}
+
+test('Spotify browser responses are no-store while the internal snapshot lasts only 30 seconds', async (t) => {
+    t.mock.method(globalThis, 'fetch', mockSpotify({ is_playing: true, item: song() }, []));
+    const pending = [];
+    let stored;
+    installCache(t, {
+        async match(key) {
+            assert.equal(new URL(key.url).search, '?cache=v2');
+            return undefined;
+        },
+        async put(key, response) { stored = response; },
+    });
+    const response = await spotifyEndpoint({ ...context(env), waitUntil(promise) { pending.push(promise); } });
+    await Promise.all(pending);
+    for (const header of ['Cache-Control', 'CDN-Cache-Control', 'Cloudflare-CDN-Cache-Control']) {
+        assert.equal(response.headers.get(header), 'no-store');
+    }
+    assert.equal(stored.headers.get('Cache-Control'), 'public, max-age=30');
+    assert.equal((await response.json()).current.name, 'Song song');
+    assert.equal((await stored.json()).current.name, 'Song song');
+});
+
+test('an internal Spotify cache hit never leaks cacheable headers to browsers', async (t) => {
+    t.mock.method(globalThis, 'fetch', () => assert.fail('A fresh internal snapshot needs no upstream request'));
+    installCache(t, {
+        async match() {
+            return Response.json({ status: 'connected', current: null, recent: [] }, {
+                headers: { 'Cache-Control': 'public, max-age=30' },
+            });
+        },
+    });
+    const response = await spotifyEndpoint(context(env));
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    assert.equal(response.headers.get('Cloudflare-CDN-Cache-Control'), 'no-store');
+    assert.equal((await response.json()).status, 'connected');
+});
+
 test('Letterboxd proxy uses a fixed public feed and XML content type', async (t) => {
     t.mock.method(globalThis, 'fetch', async (url) => {
         assert.equal(url, 'https://letterboxd.com/spencerjkim/rss/');
@@ -98,7 +143,40 @@ test('Letterboxd proxy uses a fixed public feed and XML content type', async (t)
     });
     const response = await letterboxdEndpoint(context());
     assert.match(response.headers.get('content-type'), /application\/xml/);
-    assert.match(response.headers.get('cache-control'), /s-maxage=300/);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.equal(response.headers.get('Cloudflare-CDN-Cache-Control'), 'no-store');
+});
+
+test('Letterboxd caches only an internal five-minute snapshot, not a browser response', async (t) => {
+    const xml = '<?xml version="1.0"?><rss><channel/></rss>';
+    t.mock.method(globalThis, 'fetch', async () => new Response(xml));
+    let stored;
+    const pending = [];
+    installCache(t, {
+        async match(key) {
+            assert.equal(new URL(key.url).search, '?cache=v2');
+            return undefined;
+        },
+        async put(key, response) { stored = response; },
+    });
+    const response = await letterboxdEndpoint({ ...context(), waitUntil(promise) { pending.push(promise); } });
+    await Promise.all(pending);
+    assert.equal(stored.headers.get('Cache-Control'), 'public, max-age=300');
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    assert.equal(await response.text(), xml);
+});
+
+test('Letterboxd internal cache hits remain non-cacheable in the browser', async (t) => {
+    t.mock.method(globalThis, 'fetch', () => assert.fail('The internal cache should serve the feed'));
+    installCache(t, {
+        async match() {
+            return new Response('<rss><channel/></rss>', { headers: { 'Cache-Control': 'public, max-age=300' } });
+        },
+    });
+    const response = await letterboxdEndpoint(context());
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    assert.equal(response.headers.get('Cloudflare-CDN-Cache-Control'), 'no-store');
+    assert.match(await response.text(), /<rss>/);
 });
 
 test('history fetches a second page with an exclusive before cursor for up to 100 plays', async () => {
