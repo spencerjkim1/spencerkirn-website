@@ -22,6 +22,16 @@ serve live listening activity or the Letterboxd feed. Existing `/demo` routing
 is unchanged. Only `/api/*` runs the Worker before assets. `wrangler.jsonc`
 binds the prepared public directory as `ASSETS`; server code remains outside it.
 
+## Interactive tree header
+
+The homepage uses a transparent cutout of the original favicon artwork over a
+subtle cream background. `assets/tree.js` bends the canopy toward the mouse with
+a springy sway and a short, fading ripple through the branches, while keeping
+the trunk anchored. It renders only while movement is settling, stops
+when hidden or offscreen, and uses no animation library. Touchscreens, reduced-
+motion preferences, and browsers without JavaScript/canvas get a still tree.
+The artwork is decorative and does not block text selection or navigation.
+
 ## Spotify
 
 Order: **Currently playing**, **Recently played**, the On Repeat player without

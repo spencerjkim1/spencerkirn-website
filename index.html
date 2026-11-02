@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" sizes="180x180">
     <meta name="description" content="Music, films, and experiments by Spencer Kim.">
     <script src="/assets/site.js" defer></script>
+    <script type="module" src="/assets/tree.js"></script>
     <style>
         * {
             margin: 0;
@@ -157,7 +158,11 @@
 </head>
 <body>
     <!-- Name -->
-    <div class="name">
+    <div class="name tree-header">
+        <div class="tree-art" aria-hidden="true">
+            <img class="tree-art__still" src="/assets/tree-cutout.png" width="480" height="480" alt="" fetchpriority="high">
+            <canvas class="tree-art__canvas" hidden></canvas>
+        </div>
         <h1>SPENCER KIM</h1>
     </div>
 
@@ -217,7 +222,7 @@
 
     <!-- Footer -->
     <footer>
-        <a href="#">Back to the entrance ↑</a>
+        <a href="#" aria-label="Back to top">↑</a>
     </footer>
 </body>
 </html>
