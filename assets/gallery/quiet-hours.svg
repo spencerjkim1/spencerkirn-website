@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="600" viewBox="0 0 480 600">
+  <rect width="480" height="600" fill="#eee9db"/>
+  <circle cx="341" cy="164" r="65" fill="#ae4c35"/>
+  <path d="M101 469V232a113 113 0 0 1 226 0v237Z" fill="#f8f6ed" stroke="#282823" stroke-width="5"/>
+  <path d="M116 453V235a98 98 0 0 1 196 0v218Z" fill="#c3d0cf"/>
+  <path d="M116 361q88-37 196 0v92H116Z" fill="#778f9d"/>
+  <path d="M214 137v317M115 279h198" stroke="#282823" stroke-width="5"/>
+  <path d="M72 470h283M60 484h309" stroke="#282823" stroke-width="5"/>
+  <path d="m350 383 10 7 10-7m-2-39 9 6 9-6" fill="none" stroke="#282823" stroke-width="3"/>
+  <text x="60" y="550" font-family="monospace" font-size="10" letter-spacing="3" fill="#605c51">A STUDY IN DOING NOTHING.</text>
+</svg>

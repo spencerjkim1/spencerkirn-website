@@ -1,0 +1,44 @@
+/* Numbered navigation and playlists, layered over the original text-first page. */
+:root { --ink: #171717; --muted: #66645f; --accent: #a33e2c; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body { color: var(--ink); }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; }
+[hidden] { display: none !important; }
+.site-nav { position: sticky; top: 0; z-index: 5; display: flex; gap: 42px; padding: 20px 40px; border-bottom: 1px solid #000; background: #fff; }
+.site-nav a { display: flex; gap: 12px; align-items: baseline; text-decoration: none; text-transform: uppercase; font-size: .85rem; }
+.site-nav a span { font: .65rem 'Courier New', monospace; color: var(--muted); }
+.site-nav a:hover, .site-nav a[aria-current] { color: var(--accent); }
+.playlist + .playlist { margin-top: 56px; }
+.playlist-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 20px; }
+.playlist-heading h3 { font-size: 1.4rem; letter-spacing: -.03em; }
+.playlist .content { padding: 32px; min-height: auto; }
+.playlist iframe { display: block; border: 0; }
+.playlist-note { font: .75rem/1.7 'Courier New', monospace; color: var(--muted); margin: 16px 0; }
+.text-link, .text-button { font: .75rem/1.5 'Courier New', monospace; text-decoration: none; border: none; border-bottom: 1px solid currentColor; background: transparent; padding: 6px 0; }
+.text-link:hover, .text-button:hover { color: var(--accent); }
+.recent-tracks { margin-bottom: 30px; }
+.track-list-heading { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
+.track-list-heading h4 { font-size: 1rem; }
+.track-list-heading span { font: .7rem 'Courier New', monospace; color: var(--muted); }
+.track-list { list-style: none; margin-bottom: 12px; }
+.track-list a { display: grid; grid-template-columns: 2rem 1fr auto; align-items: center; gap: 14px; padding: 16px 0; border-top: 1px solid #ddd; text-decoration: none; }
+.track-list a:hover { color: var(--accent); }
+.track-number, .track-date { font: .7rem 'Courier New', monospace; color: var(--muted); }
+.track-name { display: block; font-size: .9rem; }
+.track-artist { display: block; font-weight: 400; font-size: .8rem; color: var(--muted); margin-top: 3px; }
+footer { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: .65rem; }
+footer a { text-decoration: none; }
+@media (min-width: 1400px) { .site-nav { padding-left: max(40px, calc((100vw - 1320px) / 2)); } }
+@media (max-width: 768px) {
+    .site-nav { padding: 16px 20px; gap: 16px; overflow-x: auto; }
+    .site-nav a { font-size: .7rem; gap: 7px; white-space: nowrap; }
+    .playlist-heading { display: block; }
+    .playlist .content { padding: 16px; }
+    .track-date { display: none; }
+    .track-list a { grid-template-columns: 1.5rem 1fr; }
+    .track-list-heading { flex-wrap: wrap; gap: 8px; }
+    footer { flex-direction: column; align-items: center; padding: 40px 20px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

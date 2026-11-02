@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="600" viewBox="0 0 480 600">
+  <rect width="480" height="600" fill="#f8f6ed"/>
+  <g fill="#dedbcf"><circle cx="80" cy="100" r="2"/><circle cx="160" cy="100" r="2"/><circle cx="240" cy="100" r="2"/><circle cx="320" cy="100" r="2"/><circle cx="400" cy="100" r="2"/><circle cx="80" cy="200" r="2"/><circle cx="160" cy="200" r="2"/><circle cx="240" cy="200" r="2"/><circle cx="320" cy="200" r="2"/><circle cx="400" cy="200" r="2"/><circle cx="80" cy="300" r="2"/><circle cx="160" cy="300" r="2"/><circle cx="240" cy="300" r="2"/><circle cx="320" cy="300" r="2"/><circle cx="400" cy="300" r="2"/><circle cx="80" cy="400" r="2"/><circle cx="160" cy="400" r="2"/><circle cx="240" cy="400" r="2"/><circle cx="320" cy="400" r="2"/><circle cx="400" cy="400" r="2"/></g>
+  <path d="M98 440c174 20 305-66 240-149-54-69-211 98-218 0-8-102 195 13 150-86-17-38-60-43-37-79 14-22 62-14 98-4" fill="none" stroke="#272823" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="98" cy="440" r="14" fill="#667f96"/>
+  <path d="m355 78 6 27 25-9-17 21 22 17-28-3-5 27-9-26-26 9 17-22-22-16 28 3Z" fill="#ae4c35"/>
+  <text x="65" y="487" font-family="monospace" font-size="11" fill="#605c51">you are here.</text>
+  <text x="65" y="550" font-family="monospace" font-size="10" letter-spacing="3" fill="#605c51">NO SHORTCUTS NECESSARY.</text>
+</svg>
