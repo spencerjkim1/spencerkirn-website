@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="/assets/favicon.png?v=2" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" sizes="180x180">
     <meta name="description" content="Music, films, and experiments by Spencer Kim.">
-    <script src="/assets/site.js?v=3" defer></script>
+    <script src="/assets/site.js?v=4" defer></script>
     <script type="module" src="/assets/tree.js"></script>
     <style>
         * {
@@ -154,7 +154,7 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/site.css?v=2">
 </head>
 <body>
     <!-- Name -->
@@ -181,7 +181,7 @@
                 <div class="playlist-heading"><h3 id="currently-playing-heading">Currently playing</h3><span id="playback-state" class="playback-state" hidden></span></div>
                 <p class="playlist-note" id="currently-playing-status" role="status">Loading Spotify…</p>
                 <a id="current-track" class="current-track" target="_blank" rel="noopener noreferrer" hidden>
-                    <img id="current-art" width="96" height="96" alt="" hidden>
+                    <span id="current-art-frame" class="current-art-frame" hidden><img id="current-art" width="96" height="96" alt="" hidden></span>
                     <span><strong id="current-name"></strong><span id="current-artist" class="track-artist"></span><span class="track-source">Listen on Spotify ↗</span></span>
                 </a>
             </article>
@@ -211,8 +211,7 @@
         <section id="demo">
             <h2>DEMOS</h2>
             <div class="content">
-                <a href="/demo"
-                   style="color: #000; text-decoration: none; font-size: 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+                <a href="/demo" class="demo-link">
                    VIEW DEMOS →
                 </a>
             </div>

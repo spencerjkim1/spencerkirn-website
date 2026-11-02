@@ -123,6 +123,7 @@ async function loadSpotify() {
             const image = safeURL(current.image, ['i.scdn.co', 'image-cdn-ak.spotifycdn.com', 'image-cdn-fa.spotifycdn.com']);
             const art = document.querySelector('#current-art');
             art.hidden = !image;
+            document.querySelector('#current-art-frame').hidden = !image;
             if (image) art.src = image;
             state.textContent = current.isPlaying ? 'Playing' : 'Paused';
             state.classList.toggle('is-playing', current.isPlaying);

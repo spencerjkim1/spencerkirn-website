@@ -32,6 +32,19 @@ when hidden or offscreen, and uses no animation library. Touchscreens, reduced-
 motion preferences, and browsers without JavaScript/canvas get a still tree.
 The artwork is decorative and does not block text selection or navigation.
 
+## Visual design
+
+The header has a low-opacity, static paper-grain SVG behind its artwork and text.
+Typography uses two local font stacks: Helvetica Neue for the name, navigation,
+and metadata; Georgia for film titles. No web-font downloads or third-party
+texture requests are needed. Rust (`#a33e2c`) is the sole interface accent for
+links, active navigation, playback indicator, focus rings, and the history control.
+
+On mouse hover, album covers zoom 4.5% inside clipped frames and film posters
+lift 4px without shifting surrounding text. Links reveal thin underlines. Keyboard
+focus gets equivalent feedback; reduced-motion settings disable artwork movement
+and transitions. Touchscreens do not depend on hover. Letterboxd stars stay 18px.
+
 ## Spotify
 
 Spotify responses are never stored in the browser or automatic CDN cache. Only
