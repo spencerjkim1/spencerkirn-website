@@ -35,8 +35,10 @@ The artwork is decorative and does not block text selection or navigation.
 ## Visual design
 
 The header has a low-opacity, static paper-grain SVG behind its artwork and text.
-Typography uses two local font stacks: Helvetica Neue for the name, navigation,
-and metadata; Georgia for film titles. No web-font downloads or third-party
+Typography uses the same bold (700-weight) Helvetica Neue stack as the name
+throughout the homepage, including film titles and metadata. The uppercase
+Spotify and Letterboxd profile links are centered on every screen size. The
+third-party Spotify embed retains Spotify's own styling. No web-font downloads or third-party
 texture requests are needed. Rust (`#a33e2c`) is the sole interface accent for
 links, active navigation, playback indicator, focus rings, and the history control.
 
