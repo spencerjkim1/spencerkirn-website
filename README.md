@@ -1,9 +1,9 @@
 # Spencer Kim’s website
 
 Static HTML/CSS/JavaScript served by the existing Cloudflare **Worker** named
-`spencerkirn-website` (not a Pages project), with two server-side API handlers. The build
+`spencerkirn-website` (not a Pages project), with server-side activity and drawing API handlers. The build
 copies only approved public files to `.site`; credentials and server code are
-never served as static assets. Navigation: Spotify 01, Letterboxd 02, Demos 03. Gallery is removed;
+never served as static assets. Navigation: Spotify 01, Letterboxd 02, Draw Me Sumn 03, Demos 04. Gallery is removed;
 its starter SVGs remain in `assets/gallery/` for possible future use.
 
 ## Preview and test
@@ -21,6 +21,49 @@ contains credentials. A plain static server pointed at `.site` still shows On Re
 serve live listening activity or the Letterboxd feed. Existing `/demo` routing
 is unchanged. Only `/api/*` runs the Worker before assets. `wrangler.jsonc`
 binds the prepared public directory as `ASSETS`; server code remains outside it.
+
+## Draw Me Sumn
+
+An 800 × 500 canvas between Letterboxd and Demos supports mouse, pen and touch,
+three ink colors, three brush widths, an eraser toggle, undo and confirmed clear.
+The eraser uses the selected size, and its strokes can be undone. Toggle it off
+or select an ink color to draw again. Resizing never
+erases the drawing. Submission errors preserve the canvas; success is shown only
+after R2 confirms the write. Drawings are not published and there is no public
+listing or download API. View/download them through the authenticated R2 dashboard.
+There are no email notifications or D1 database in this first version.
+
+### Local-only submission preview
+
+Run `npm run dev:draw` and open http://localhost:8082/#draw. This uses
+Cloudflare's public Turnstile test keys and Wrangler's **local** R2 storage. It does
+not create or write a remote bucket. Test keys are explicitly refused on non-local
+hostnames. Local submissions do not reach Spencer's production inbox. Normal dev
+leaves Send unavailable unless the required configuration is present.
+
+### Production setup — required before deployment
+
+1. Create a **new private** R2 bucket: `npx wrangler r2 bucket create spencerkirn-drawings`.
+   Leave r2.dev and custom-domain public access disabled. Do not reuse another bucket.
+2. Create a managed Turnstile widget allowing `spencerkirn.com`.
+3. Set `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` using Wrangler secrets
+   (interactive `npx wrangler secret put NAME`). Do not commit the secret key.
+4. Set `DRAWINGS_ENABLED` to the string `true` using a Worker secret to open
+   submissions. Set it to `false` to close the inbox without changing the page.
+5. Review usage/billing alerts and R2 retention before opening the public inbox.
+   This version keeps drawings until manually deleted; there is no automatic expiry.
+6. Deploy and verify a real submission, then inspect the private object in R2.
+
+The config binds `DRAWINGS` and a `DRAWINGS_RATE_LIMITER` (3 attempts/IP/minute).
+The rate limiter is approximate/per-location, not a global spending cap. Turnstile
+is validated server-side, including hostname and action; same-origin requests are
+required. Uploads are streamed with a 1 MiB hard byte limit, and PNG dimensions,
+chunk bounds and CRCs are checked. This is not full image decoding or content
+moderation: keep objects private and treat submissions as untrusted. No SVG upload
+is accepted. No IP address or visitor identity is stored in R2 metadata; Cloudflare
+still processes request metadata for rate limiting and Turnstile. Verification
+loads only when the canvas is near the viewport. A timed-out delivery may have
+completed; retrying can produce a duplicate (no persistent idempotency database).
 
 ## Interactive tree header
 

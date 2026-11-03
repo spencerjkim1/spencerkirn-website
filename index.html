@@ -10,6 +10,7 @@
     <meta name="description" content="Music, films, and experiments by Spencer Kim.">
     <script src="/assets/site.js?v=4" defer></script>
     <script type="module" src="/assets/tree.js"></script>
+    <script type="module" src="/assets/draw.js?v=3"></script>
     <style>
         * {
             margin: 0;
@@ -154,7 +155,7 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="/assets/site.css?v=5">
+    <link rel="stylesheet" href="/assets/site.css?v=7">
 </head>
 <body>
     <!-- Name -->
@@ -169,7 +170,8 @@
     <nav class="site-nav" aria-label="Explore the site">
         <a href="#spotify">Spotify <span>01</span></a>
         <a href="#letterboxd">Letterboxd <span>02</span></a>
-        <a href="#demo">Demos <span>03</span></a>
+        <a href="#draw">Draw Me Sumn <span>03</span></a>
+        <a href="#demo">Demos <span>04</span></a>
     </nav>
 
     <main>
@@ -207,6 +209,34 @@
             <p class="playlist-note" id="films-status" role="status">Loading recent films…</p>
             <div class="film-grid" id="recent-films"></div>
             <p class="profile-link"><a class="text-link" href="https://letterboxd.com/spencerjkim/" target="_blank" rel="noopener noreferrer">LETTERBOXD</a></p>
+        </section>
+        <section id="draw" aria-labelledby="draw-heading">
+            <h2 id="draw-heading">DRAW ME SUMN</h2>
+            <div class="drawing-desk">
+                <p id="draw-instructions" class="playlist-note">draw me a lil sumn.</p>
+                <div class="draw-toolbar" role="group" aria-label="Drawing tools">
+                    <fieldset class="draw-colors">
+                        <legend class="visually-hidden">Ink color</legend>
+                        <label><input type="radio" name="ink" value="#171717" checked><span style="--swatch: #171717">Black</span></label>
+                        <label><input type="radio" name="ink" value="#a33e2c"><span style="--swatch: #a33e2c">Rust</span></label>
+                        <label><input type="radio" name="ink" value="#365b78"><span style="--swatch: #365b78">Blue</span></label>
+                    </fieldset>
+                    <label class="draw-size">Size <select id="draw-size"><option value="3">Fine</option><option value="7" selected>Medium</option><option value="14">Bold</option></select></label>
+                    <div class="draw-actions">
+                        <button type="button" id="draw-eraser" class="draw-tool" aria-pressed="false">Eraser</button>
+                        <button type="button" id="draw-undo" class="draw-tool" disabled>Undo</button>
+                        <button type="button" id="draw-clear" class="draw-tool" disabled>Clear</button>
+                    </div>
+                </div>
+                <canvas id="draw-canvas" width="800" height="500" aria-label="Drawing canvas" aria-describedby="draw-instructions draw-privacy">Drawing requires a browser with canvas support.</canvas>
+                <div class="draw-bottom">
+                    <p id="draw-privacy" class="playlist-note">sent privately</p>
+                    <button type="button" id="draw-send" class="draw-send" disabled>Send drawing <span aria-hidden="true">→</span></button>
+                </div>
+                <div id="draw-challenge"></div>
+                <p id="draw-status" class="playlist-note" role="status" aria-live="polite">Loading drawing tools…</p>
+                <noscript><p class="playlist-note">Please enable JavaScript to draw and send.</p></noscript>
+            </div>
         </section>
         <section id="demo">
             <h2>DEMOS</h2>
