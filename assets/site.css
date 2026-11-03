@@ -34,6 +34,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .current-track strong { font-size: 1.25rem; letter-spacing: -.025em; }
 .current-track > span { min-width: 0; overflow-wrap: anywhere; }
 .track-source { display: block; margin-top: 12px; font: 700 .7rem var(--font-sans); color: var(--muted); }
+.external-arrow { display: inline-block; width: 1em; height: 1em; vertical-align: -.12em; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
 .playback-state { font: 700 .7rem var(--font-sans); color: var(--muted); }
 .playback-state.is-playing::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: var(--accent); }
 .history-limit { display: flex; align-items: center; gap: 8px; font: 700 .7rem var(--font-sans); color: var(--muted); }
