@@ -42,7 +42,9 @@ export function validDrawing(bytes) {
             data ||= length > 0;
         } else if (type === 'IEND') {
             return header && data && length === 0 && offset + 12 === bytes.length;
-        } else if (!['sRGB', 'gAMA', 'cHRM', 'pHYs'].includes(type)) return false;
+        // Browser encoders may attach ICC profiles or newer HDR/color-space chunks.
+        // These do not change the canvas geometry or expose executable content.
+        } else if (!['sRGB', 'gAMA', 'cHRM', 'pHYs', 'iCCP', 'cICP', 'sBIT', 'mDCv', 'cLLi'].includes(type)) return false;
         offset += length + 12;
     }
     return false;
@@ -96,7 +98,7 @@ export async function handleDrawings({ request, env }, dependencies = {}) {
         }
         const bytes = await readLimited(request);
         if (!bytes) return reply({ error: 'Drawing is too large or empty.' }, 413);
-        if (!validDrawing(bytes)) return reply({ error: 'Please send an 800 × 500 PNG from the drawing canvas.' }, 400);
+        if (!validDrawing(bytes)) return reply({ error: 'We couldn’t read this drawing. It has not been sent. Please try again; your drawing is still here.' }, 400);
         const id = crypto.randomUUID();
         const date = new Date().toISOString();
         await env.DRAWINGS.put(`drawings/${date.slice(0, 10)}/${id}.png`, bytes, {

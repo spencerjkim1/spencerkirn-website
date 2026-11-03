@@ -136,7 +136,7 @@ async function loadChallenge(sitekey) {
     widget = window.turnstile.render('#draw-challenge', {
         sitekey,
         action: 'draw-sumn',
-        size: window.matchMedia('(max-width: 480px)').matches ? 'compact' : 'normal',
+        size: 'flexible',
         callback: (value) => {
             token = value;
             status.textContent = feedback || (sent ? 'Sent. Thank you for the drawing!' : '');

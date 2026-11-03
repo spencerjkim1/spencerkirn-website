@@ -19,14 +19,14 @@ function chunk(type, body = Buffer.alloc(0)) {
     return Buffer.concat([length, data, checksum]);
 }
 
-function png(width = 800) {
+function png(width = 800, colorChunks = []) {
     const header = Buffer.alloc(13);
     header.writeUInt32BE(width, 0);
     header.writeUInt32BE(500, 4);
     header[8] = 8;
     header[9] = 6;
     return Buffer.concat([
-        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', header),
+        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', header), ...colorChunks,
         chunk('IDAT', deflateSync(Buffer.alloc((width * 4 + 1) * 500))), chunk('IEND'),
     ]);
 }
@@ -138,7 +138,37 @@ test('invalid drawings do not reach R2', async () => {
     const s = setup();
     const response = await handleDrawings({ request: request({ body: 'not a PNG' }), env: s.env }, s.dependencies);
     assert.equal(response.status, 400);
+    const message = (await response.json()).error;
+    assert.doesNotMatch(message, /800|500|PNG/);
+    assert.match(message, /not been sent/);
     assert.equal(s.stored.length, 0);
+});
+
+test('browser PNGs with ICC color-profile metadata reach R2', async () => {
+    const profile = chunk('iCCP', Buffer.concat([Buffer.from('Display P3\0\0'), deflateSync(Buffer.alloc(128))]));
+    const body = png(800, [profile]);
+    assert.equal(validDrawing(body), true);
+    const s = setup();
+    const response = await handleDrawings({ request: request({ body }), env: s.env }, s.dependencies);
+    assert.equal(response.status, 201);
+    assert.equal(s.stored.length, 1);
+});
+
+test('additional browser color metadata remains subject to CRC, geometry and chunk checks', () => {
+    const color = chunk('cICP', Buffer.from([12, 13, 0, 1]));
+    const bits = chunk('sBIT', Buffer.from([8, 8, 8, 8]));
+    assert.equal(validDrawing(png(800, [color, bits])), true);
+    assert.equal(validDrawing(png(801, [color])), false);
+    const broken = png(800, [color]);
+    broken[45] ^= 1;
+    assert.equal(validDrawing(broken), false);
+    assert.equal(validDrawing(png(800, [chunk('acTL', Buffer.alloc(8))])), false);
+});
+
+test('Turnstile uses a horizontal flexible widget rather than compact mobile mode', async () => {
+    const script = await readFile(new URL('../assets/draw.js', import.meta.url), 'utf8');
+    assert.match(script, /size: 'flexible'/);
+    assert.doesNotMatch(script, /'compact'/);
 });
 
 test('storage failures are sanitized and do not falsely confirm delivery', async () => {
