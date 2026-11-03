@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { readFile } from 'node:fs/promises';
-import { handleDrawings, validDrawing } from '../server/drawings.js';
+import { handleDrawings, validDrawing, normalizeDrawing } from '../server/drawings.js';
 import worker from '../worker.js';
 
 function chunk(type, body = Buffer.alloc(0)) {
@@ -163,6 +163,32 @@ test('additional browser color metadata remains subject to CRC, geometry and chu
     broken[45] ^= 1;
     assert.equal(validDrawing(broken), false);
     assert.equal(validDrawing(png(800, [chunk('acTL', Buffer.alloc(8))])), false);
+});
+
+test('Apple-style PNG EXIF and private metadata are accepted but not stored', async () => {
+    // Apple ImageIO can add eXIf to a fresh 800 × 500 canvas with no photo input.
+    const metadata = [
+        chunk('eXIf', Buffer.from('TU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAADIKADAAQAAAABAAAB9AAAAAA=', 'base64')),
+        chunk('iDOT', Buffer.alloc(28)),
+        chunk('tEXt', Buffer.from('Software\0Apple ImageIO')),
+        chunk('iTXt', Buffer.from('Description\0\0\0\0\0Private metadata')),
+    ];
+    const body = png(800, metadata);
+    assert.equal(validDrawing(body), true);
+    assert.deepEqual(normalizeDrawing(body), new Uint8Array(png()));
+    const s = setup();
+    const response = await handleDrawings({ request: request({ body }), env: s.env }, s.dependencies);
+    assert.equal(response.status, 201);
+    assert.deepEqual(s.stored[0][1], new Uint8Array(png()));
+});
+
+test('metadata normalization still rejects corrupt metadata, animation and unknown critical chunks', () => {
+    const body = png(800, [chunk('eXIf', Buffer.alloc(68))]);
+    body[45] ^= 1;
+    assert.equal(normalizeDrawing(body), false);
+    for (const type of ['acTL', 'fcTL', 'fdAT', 'ABCD', 'abct']) {
+        assert.equal(normalizeDrawing(png(800, [chunk(type, Buffer.alloc(8))])), false);
+    }
 });
 
 test('Turnstile uses a horizontal flexible widget rather than compact mobile mode', async () => {

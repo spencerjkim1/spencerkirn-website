@@ -13,19 +13,23 @@ function configured(env, url) {
         && !!env.TURNSTILE_SITE_KEY && !!env.TURNSTILE_SECRET_KEY && (!testing || LOCAL_HOSTS.has(url.hostname));
 }
 
-// Check the PNG envelope, CRCs and fixed canvas geometry before private storage.
-// This is not an image decoder or content-moderation service. No public serving endpoint exists.
-export function validDrawing(bytes) {
+// Validate the PNG envelope and remove non-rendering metadata. Apple encoders can
+// include EXIF and private ancillary chunks even for a newly drawn canvas.
+// This is not an image decoder or content-moderation service; objects stay private.
+export function normalizeDrawing(bytes) {
     const signature = [137, 80, 78, 71, 13, 10, 26, 10];
     if (bytes.length > MAX_BYTES || bytes.length < 57 || !signature.every((value, i) => bytes[i] === value)) return false;
     const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     let offset = 8;
     let header = false;
     let data = false;
+    const chunks = [bytes.subarray(0, 8)];
+    const colorChunks = new Set(['sRGB', 'gAMA', 'cHRM', 'pHYs', 'iCCP', 'cICP', 'sBIT', 'mDCv', 'cLLi']);
     while (offset + 12 <= bytes.length) {
         const length = view.getUint32(offset);
         if (length > MAX_BYTES || offset + length + 12 > bytes.length) return false;
         const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+        if (!/^[A-Za-z]{2}[A-Z][A-Za-z]$/.test(type)) return false;
         let crc = 0xffffffff;
         for (let i = offset + 4; i < offset + 8 + length; i++) {
             crc ^= bytes[i];
@@ -41,13 +45,24 @@ export function validDrawing(bytes) {
         } else if (type === 'IDAT') {
             data ||= length > 0;
         } else if (type === 'IEND') {
-            return header && data && length === 0 && offset + 12 === bytes.length;
-        // Browser encoders may attach ICC profiles or newer HDR/color-space chunks.
-        // These do not change the canvas geometry or expose executable content.
-        } else if (!['sRGB', 'gAMA', 'cHRM', 'pHYs', 'iCCP', 'cICP', 'sBIT', 'mDCv', 'cLLi'].includes(type)) return false;
+            if (!header || !data || length !== 0 || offset + 12 !== bytes.length) return false;
+            chunks.push(bytes.subarray(offset, offset + 12));
+            const cleaned = new Uint8Array(chunks.reduce((sum, chunk) => sum + chunk.length, 0));
+            let position = 0;
+            for (const chunk of chunks) { cleaned.set(chunk, position); position += chunk.length; }
+            return cleaned;
+        } else if (['acTL', 'fcTL', 'fdAT'].includes(type) || !/^[a-z]/.test(type)) {
+            // Reject animation and unsupported critical chunks, not harmless metadata.
+            return false;
+        }
+        if (['IHDR', 'IDAT'].includes(type) || colorChunks.has(type)) chunks.push(bytes.subarray(offset, offset + length + 12));
         offset += length + 12;
     }
     return false;
+}
+
+export function validDrawing(bytes) {
+    return !!normalizeDrawing(bytes);
 }
 
 async function readLimited(request) {
@@ -98,10 +113,11 @@ export async function handleDrawings({ request, env }, dependencies = {}) {
         }
         const bytes = await readLimited(request);
         if (!bytes) return reply({ error: 'Drawing is too large or empty.' }, 413);
-        if (!validDrawing(bytes)) return reply({ error: 'We couldn’t read this drawing. It has not been sent. Please try again; your drawing is still here.' }, 400);
+        const drawing = normalizeDrawing(bytes);
+        if (!drawing) return reply({ error: 'We couldn’t read this drawing. It has not been sent. Please try again; your drawing is still here.' }, 400);
         const id = crypto.randomUUID();
         const date = new Date().toISOString();
-        await env.DRAWINGS.put(`drawings/${date.slice(0, 10)}/${id}.png`, bytes, {
+        await env.DRAWINGS.put(`drawings/${date.slice(0, 10)}/${id}.png`, drawing, {
             httpMetadata: { contentType: 'image/png', cacheControl: 'private, no-store' },
             customMetadata: { submittedAt: date },
         });

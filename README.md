@@ -59,7 +59,10 @@ The rate limiter is approximate/per-location, not a global spending cap. Turnsti
 is validated server-side, including hostname and action; same-origin requests are
 required. Uploads are streamed with a 1 MiB hard byte limit, and PNG dimensions,
 chunk bounds and CRCs are checked. Standard browser color-profile chunks (including
-ICC and HDR metadata) are accepted. Turnstile uses the horizontal flexible layout
+ICC and HDR metadata) are accepted. Non-rendering ancillary metadata, including
+Apple encoder EXIF and private offset chunks, is validated then stripped before
+storage. Unknown critical chunks and animated PNGs are rejected.
+Turnstile uses the horizontal flexible layout
 on desktop and mobile. This is not full image decoding or content
 moderation: keep objects private and treat submissions as untrusted. No SVG upload
 is accepted. No IP address or visitor identity is stored in R2 metadata; Cloudflare
