@@ -22,6 +22,32 @@ serve live listening activity or the Letterboxd feed. Existing `/demo` routing
 is unchanged. Only `/api/*` runs the Worker before assets. `wrangler.jsonc`
 binds the prepared public directory as `ASSETS`; server code remains outside it.
 
+## Demo hub and request lifecycle
+
+`/demo` features the existing WAF demo at `/demo/appsec`. Its animated Traffic
+sequence is a **simulated product overview**, not a trace of the zone's actual
+configuration or a precise Ruleset Engine phase order. Product stages can span
+multiple phases, and redirects or blocks can terminate processing early.
+
+The compact sequence is HTTP Request → General Rules → DDoS protection → WAF →
+Bots → Rate Limiting → Application. General Rules groups URL, routing and
+configuration controls. Bot rules are grouped by purpose, even when enforced
+within WAF; the Russia example stops at a WAF country rule.
+
+`assets/request-flow.js` loops through a successful request, a DDoS mitigation,
+a WAF attack-score-1 block, a bot-score-1 block, a request from Russia blocked
+by an example country rule, and request 101 exceeding an example per-IP limit of
+100 requests per minute (429 Too Many Requests). Neither a score nor a country automatically blocks
+traffic: these illustrations assume configured block rules.
+No requests are sent, no Cloudflare settings are changed, and no
+active-rule counts are fabricated. Users can switch scenarios or pause playback.
+Each example has a 2.5-second introduction, one second of travel per stage,
+and an 8-second hold on its outcome before advancing (12.5–16.5 seconds total).
+Animation stops while hidden or offscreen. Reduced-motion preferences show each
+selected example's still outcome instead. The diagram remains readable without
+JavaScript. The tracing link opens Cloudflare's Rules simulator documentation;
+it does not run a simulation against the account.
+
 ## Draw Me Sumn
 
 An 800 × 500 canvas between Letterboxd and Demos supports mouse, pen and touch,

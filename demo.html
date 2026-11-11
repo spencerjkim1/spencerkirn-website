@@ -8,7 +8,8 @@
     <link rel="icon" href="/assets/favicon.ico?v=2" sizes="16x16 32x32 48x48">
     <link rel="icon" type="image/png" href="/assets/favicon.png?v=2" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" sizes="180x180">
-    <link rel="stylesheet" href="/assets/demo-hub.css?v=1">
+    <link rel="stylesheet" href="/assets/demo-hub.css?v=3">
+    <script type="module" src="/assets/request-flow.js?v=4"></script>
 </head>
 <body id="top">
     <a class="skip-link" href="#demos">Skip to demos</a>
@@ -48,28 +49,44 @@
                     </div>
                     <a class="open-demo" href="/demo/appsec">Open WAF demo <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a>
                 </div>
-                <figure class="flow-panel" aria-labelledby="flow-caption">
-                    <figcaption id="flow-caption">Request flow <span>Illustration</span></figcaption>
-                    <svg class="flow-diagram" viewBox="0 0 440 370" role="img" aria-labelledby="flow-title flow-description">
-                        <title id="flow-title">A request meets the firewall</title>
-                        <desc id="flow-description">An incoming request is evaluated by WAF rules. Allowed traffic continues to the application; blocked traffic stops at the edge. This is an illustration, not live traffic.</desc>
-                        <g class="diagram-lines">
-                            <path d="M220 69v49m-5-7 5 7 5-7M220 219v31H102v42m-5-7 5 7 5-7"/>
-                            <path class="blocked-line" d="M220 250h118v42m-5-7 5 7 5-7"/>
-                        </g>
-                        <rect class="request-node" x="133" y="22" width="174" height="47"/>
-                        <text class="node-label" x="220" y="51">Incoming request</text>
-                        <rect class="waf-node" x="91" y="130" width="258" height="89"/>
-                        <path class="shield" d="m129 155 17 6v13c0 11-10 19-17 23-7-4-17-12-17-23v-13z"/>
-                        <path class="shield" d="m121 174 6 6 11-13"/>
-                        <text class="waf-node-title" x="169" y="173">WAF</text>
-                        <text class="waf-node-detail" x="169" y="194">Evaluate the rules</text>
-                        <rect class="result-node" x="22" y="304" width="160" height="47"/>
-                        <text class="node-label" x="102" y="333">Allow → Application</text>
-                        <rect class="blocked-node" x="258" y="304" width="160" height="47"/>
-                        <text class="blocked-label" x="338" y="333">Block at the edge</text>
-                    </svg>
-                    <p class="flow-footnote">Your request. The rules. The outcome.</p>
+                <figure class="flow-panel" aria-labelledby="flow-caption" data-running="false" data-scenario="allowed">
+                    <figcaption id="flow-caption">Traffic sequence <span>Simulated examples</span></figcaption>
+                    <p class="flow-intro">The simplified journey of a request through Cloudflare.</p>
+                    <div class="flow-controls">
+                        <div class="flow-scenarios" role="group" aria-label="Request example">
+                            <button type="button" data-scenario="allowed" aria-pressed="true" disabled>Allowed</button>
+                            <button type="button" data-scenario="ddos" aria-pressed="false" disabled>DDoS Attack</button>
+                            <button type="button" data-scenario="waf" aria-pressed="false" disabled>WAF Score 1</button>
+                            <button type="button" data-scenario="bots" aria-pressed="false" disabled>Bot Score 1</button>
+                            <button type="button" data-scenario="russia" aria-pressed="false" disabled>Russia Blocked</button>
+                            <button type="button" data-scenario="rate-limit" aria-pressed="false" disabled>Rate Limited</button>
+                        </div>
+                        <button type="button" class="flow-pause" aria-label="Pause request animation" disabled>Pause</button>
+                    </div>
+                    <div class="flow-story">
+                        <span class="flow-example-label">Example 01 / Allowed</span>
+                        <p class="flow-example-description">A normal request passes the configured checks and reaches the application.</p>
+                    </div>
+                    <div class="sequence-track">
+                        <div class="sequence-progress" aria-hidden="true"></div>
+                        <span class="request-packet packet-trail" data-delay="220" aria-hidden="true" hidden></span>
+                        <span class="request-packet packet-trail" data-delay="110" aria-hidden="true" hidden></span>
+                        <span class="request-packet" data-delay="0" aria-hidden="true" hidden></span>
+                        <div class="sequence-terminal" data-stage="request"><span class="sequence-marker" aria-hidden="true">↓</span><span>HTTP Request</span></div>
+                        <ol class="sequence-list" aria-label="Simplified request journey">
+                            <li data-stage="general"><span class="sequence-marker" aria-hidden="true">01</span><div class="sequence-detail"><h4>General Rules</h4><p>Apply URL, routing, and configuration rules.</p></div></li>
+                            <li data-stage="ddos"><span class="sequence-marker" aria-hidden="true">02</span><div class="sequence-detail"><h4>DDoS protection</h4><p>Stop attack traffic at the edge.</p></div></li>
+                            <li data-stage="waf" class="sequence-waf"><span class="sequence-marker" aria-hidden="true">03</span><div class="sequence-detail"><h4>WAF</h4><p>Inspect threats and enforce security rules.</p></div></li>
+                            <li data-stage="bots"><span class="sequence-marker" aria-hidden="true">04</span><div class="sequence-detail"><h4>Bots</h4><p>Identify and control automated traffic.</p></div></li>
+                            <li data-stage="rate-limit"><span class="sequence-marker" aria-hidden="true">05</span><div class="sequence-detail"><h4>Rate Limiting</h4><p>Keep excessive requests in check.</p></div></li>
+                        </ol>
+                        <div class="sequence-terminal" data-stage="application"><span class="sequence-marker" aria-hidden="true">✓</span><span>Application</span></div>
+                    </div>
+                    <div class="flow-result"><span class="flow-result-label">A request, from start to finish.</span><p class="flow-result-description">Follow the steps above to explore the journey.</p></div>
+                    <p class="flow-announcement" role="status"></p>
+                    <p class="flow-footnote">Simplified simulation, not live traffic or an exact phase trace; actual execution depends on configuration. Score and country blocks require configured rules. Bot and geographic rules are grouped by purpose here, even when enforced within WAF.</p>
+                    <a class="flow-trace-link" href="https://developers.cloudflare.com/rules/simulator/" target="_blank" rel="noopener noreferrer">Explore request tracing in Cloudflare <span aria-hidden="true">↗</span></a>
+                    <noscript><p class="flow-footnote">Enable JavaScript to play the request examples.</p></noscript>
                 </figure>
             </article>
         </section>
