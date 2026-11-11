@@ -1,0 +1,14 @@
+{
+    "$schema": "../node_modules/wrangler/config-schema.json",
+    "name": "spencerkirn-access-demo",
+    "account_id": "75289460a7df9db003fa99761885940c",
+    "main": "worker.js",
+    "compatibility_date": "2026-11-11",
+    "workers_dev": false,
+    "preview_urls": false,
+    "routes": [{ "pattern": "access-demo.spencerkirn.com", "custom_domain": true }],
+    "vars": {
+        "ACCESS_TEAM_DOMAIN": "spencerjkim.cloudflareaccess.com",
+        "ACCESS_AUD": "5e54b274fbece975e2673d3052efec5158d09078d6e523986848fcdb89100d8c"
+    }
+}

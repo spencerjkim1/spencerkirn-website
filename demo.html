@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Hands-on Cloudflare demonstrations by Spencer Kim. Explore Application Security and Workers: Code, Deploy, Run.">
+    <meta name="description" content="Hands-on Cloudflare demos: WAF, an Access and Gateway walkthrough, and Workers Code, Deploy, Run.">
     <title>Demos — Spencer Kim</title>
     <link rel="icon" href="/assets/favicon.ico?v=2" sizes="16x16 32x32 48x48">
     <link rel="icon" type="image/png" href="/assets/favicon.png?v=2" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" sizes="180x180">
-    <link rel="stylesheet" href="/assets/demo-hub.css?v=4">
+    <link rel="stylesheet" href="/assets/demo-hub.css?v=5">
     <script type="module" src="/assets/request-flow.js?v=4"></script>
 </head>
 <body id="top">
@@ -34,7 +34,7 @@
         <section class="collection" id="demos" aria-labelledby="collection-title">
             <div class="collection-heading">
                 <h2 id="collection-title">The collection</h2>
-                <span>02 demos</span>
+                <span>03 demos</span>
             </div>
             <article class="demo-feature" aria-labelledby="waf-title">
                 <div class="feature-copy">
@@ -89,9 +89,17 @@
                     <noscript><p class="flow-footnote">Enable JavaScript to play the request examples.</p></noscript>
                 </figure>
             </article>
+            <article class="demo-feature zero-trust-feature" aria-labelledby="zero-trust-title">
+                <div class="feature-copy">
+                    <div class="feature-meta"><span>02 / Zero Trust</span><span class="interactive-label">Live Access</span></div>
+                    <div class="feature-description"><h3 id="zero-trust-title">ACCESS &amp;<br>GATEWAY</h3><p class="product-name">Identity first. Safer browsing next.</p><p class="product-description">Open a real Access-protected application. Verify your email with a code delivered by Cloudflare, then explore a fictional workspace. Gateway examples separately simulate allow and block decisions.</p></div>
+                    <a class="open-demo" href="/demo/zero-trust">Try Access &amp; Gateway <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a>
+                </div>
+                <div class="workers-preview"><p class="eyebrow">Real Access login / Gateway simulation</p><p class="workers-equation">Enter your email.<span>↓ Access / Real emailed code</span>Open the protected app.<span>↓ Gateway / Simulated policies</span>Explore where you can go.</p><p class="product-description">One dedicated application behind Access. The demo site stays public.</p></div>
+            </article>
             <article class="demo-feature workers-feature" aria-labelledby="workers-title">
                 <div class="feature-copy">
-                    <div class="feature-meta"><span>02 / Developer platform</span><span class="interactive-label">Interactive</span></div>
+                    <div class="feature-meta"><span>03 / Developer platform</span><span class="interactive-label">Interactive</span></div>
                     <div class="feature-description"><h3 id="workers-title">WORKERS</h3><p class="product-name">Code. Deploy. Run.</p><p class="product-description">See the processing code, learn the deployment command, then make a real request. Useful backend logic without a server to provision.</p></div>
                     <a class="open-demo" href="/demo/workers">Open Workers Demo <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a>
                 </div>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+    <meta name="description" content="Try a real Cloudflare Access login for a dedicated demo application, then explore simulated Gateway policy decisions.">
+    <title>Access &amp; Gateway — Spencer Kim</title>
+    <link rel="icon" href="/assets/favicon.ico?v=2" sizes="16x16 32x32 48x48">
+    <link rel="stylesheet" href="/assets/demo-hub.css?v=5">
+    <link rel="stylesheet" href="/assets/zero-trust.css?v=2">
+    <script type="module" src="/assets/zero-trust.js?v=2"></script>
+</head>
+<body class="zero-trust" id="top">
+    <a class="skip-link" href="#access">Skip to demos</a>
+    <header class="masthead page-width"><a class="wordmark" href="/">Spencer Kim</a><span class="masthead-label">02 / Zero Trust</span><a class="home-link" href="/demos">← All demos</a></header>
+    <main class="page-width">
+        <section class="zt-intro" aria-labelledby="page-title">
+            <p class="eyebrow">Cloudflare Access + Gateway</p>
+            <h1 id="page-title">IDENTITY FIRST<span>.</span></h1>
+            <div class="zt-intro-bottom"><p>Access decides who gets in.<br>Gateway controls where you go.</p><span class="zt-simulation">Real Access login / Gateway simulation</span></div>
+        </section>
+
+        <section class="zt-gate" id="access" aria-labelledby="access-title">
+            <div class="zt-explanation"><p class="eyebrow">01 / Access — Live</p><h2 id="access-title">A real front door.<br>One protected app.</h2><p>Open Team Space, a dedicated application behind Cloudflare Access. Enter your email on Cloudflare’s login page, then enter the one-time code sent to your inbox.</p><div class="zt-policy"><span>Live policy</span><strong>Allow anyone with a verified email</strong><p>One-time PIN login · 30-minute app session · Fictional demo content only</p></div><p class="zt-small">Only access-demo.spencerkirn.com is protected. This page, the demo hub, WAF, and Workers remain public. An existing valid Access session may let you straight in.</p></div>
+            <div class="zt-signin"><div class="zt-app-label"><span class="zt-lock" aria-hidden="true">↳</span><div><strong>Team Space</strong><span>Access-protected demo application</span></div></div><h2>Try it yourself.</h2><ol class="zt-instructions"><li>Open the protected application.</li><li>Enter an email address you can access.</li><li>Check your inbox and enter Cloudflare’s code.</li><li>Explore the app and see your verified identity.</li></ol><a class="zt-primary" href="https://access-demo.spencerkirn.com/" rel="noreferrer">Open Protected App <span aria-hidden="true">→</span></a><p class="zt-small">You’ll leave this page for Cloudflare’s real Access login. Cloudflare handles email delivery and authentication logs. The demo app does not store your address. Do not submit passwords or confidential data.</p><p class="zt-small">Email OTP verifies inbox access; it is not a device-posture check or a claim of multi-factor authentication.</p></div>
+        </section>
+
+        <section class="zt-gateway" id="gateway" aria-labelledby="gateway-title"><div class="zt-gateway-intro"><div><p class="eyebrow">02 / Gateway — Simulation</p><h2 id="gateway-title">Where can you go next?</h2></div><p>Access protects the application you’re entering. Gateway applies policies to outbound traffic. Pick a fictional destination to explore example allow and block decisions.</p></div>
+            <div class="zt-destinations" role="group" aria-label="Simulate a destination request"><button type="button" data-destination="work" aria-pressed="false"><span>01 / Business</span><strong>Work application</strong><span>docs.workspace.invalid</span></button><button type="button" data-destination="threat" aria-pressed="false"><span>02 / Security</span><strong>Phishing example</strong><span>phishing-example.invalid</span></button><button type="button" data-destination="personal" aria-pressed="false"><span>03 / Application policy</span><strong>Unapproved file sharing</strong><span>files.personal-drive.invalid</span></button></div>
+            <div class="zt-gateway-result" id="gateway-result" hidden><span class="zt-decision" id="gateway-decision"></span><div><strong id="gateway-rule"></strong><p id="gateway-description"></p><p class="zt-small" id="gateway-destination"></p></div></div>
+            <p id="gateway-status" class="zt-status" role="status">Choose a destination to simulate a policy decision.</p><p class="zt-small">No destination is opened or contacted. These are fictional .invalid domains. Real Gateway enforcement requires traffic routed through Gateway, commonly with the Cloudflare One Client. HTTPS inspection requires the relevant certificate and policies. This page does not enroll your device or filter your browsing.</p>
+            <noscript><p>Enable JavaScript to try the Gateway examples. The real Access application works without this page’s JavaScript.</p></noscript>
+        </section>
+    </main>
+    <footer class="page-width"><span>Spencer Kim / Access &amp; Gateway</span><a href="#top" aria-label="Back to top">↑</a></footer>
+</body>
+</html>

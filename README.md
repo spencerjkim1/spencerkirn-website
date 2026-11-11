@@ -25,8 +25,8 @@ binds the prepared public directory as `ASSETS`; server code remains outside it.
 ## Demo hub and request lifecycle
 
 `/demos` is the hub; `/demo` remains available. The homepage and demo return links
-use `/demos`. The hub features WAF at `/demo/appsec` and the Workers demo below it
-at `/demo/workers`. Its animated Traffic
+use `/demos`. The order is WAF (`/demo/appsec`), Access & Gateway
+(`/demo/zero-trust`), then Workers (`/demo/workers`). WAF's animated Traffic
 sequence is a **simulated product overview**, not a trace of the zone's actual
 configuration or a precise Ruleset Engine phase order. Product stages can span
 multiple phases, and redirects or blocks can terminate processing early.
@@ -49,6 +49,41 @@ Animation stops while hidden or offscreen. Reduced-motion preferences show each
 selected example's still outcome instead. The diagram remains readable without
 JavaScript. The tracing link opens Cloudflare's Rules simulator documentation;
 it does not run a simulation against the account.
+
+## Access & Gateway: real application login, simulated Gateway
+
+`/demo/zero-trust` is a public introduction linking to the **real Access-protected**
+application at `https://access-demo.spencerkirn.com/`. Only that dedicated hostname
+is protected; the homepage, demo hub, WAF, and Workers pages remain public.
+
+Cloudflare Access delivers a real emailed one-time PIN. The app accepts anyone
+who authenticates via the existing one-time PIN identity provider, with a
+30-minute application/policy session. Existing valid Access sessions may skip a
+fresh email challenge. This is public demo content, not confidential data. OTP
+proves inbox access, not device posture or multi-factor authentication. Visitors
+can count toward the account's Access user allocation; no paid plan was enabled.
+Cloudflare handles email delivery and authentication logs. The application
+displays the verified email but does not persist identities or tokens.
+
+The separate Worker in `access-app/worker.js` verifies the Access JWT using
+Cloudflare's remote public keys (`jose`): RS256 signature, issuer, application
+audience, expiry, and required identity claims. It fails closed without a valid
+token/configuration, serves only its exact HTTPS hostname, and sends private,
+no-store responses. `workers.dev` and preview URLs are disabled. The site build
+never publishes `access-app/`. Deploy separately with
+`npx wrangler deploy --config access-app/wrangler.jsonc`.
+
+Access application ID: `4bcafef9-18c0-4d23-9d93-cf033c300826`.
+Team domain: `spencerjkim.cloudflareaccess.com`. The audience in the Worker config
+is a public application identifier, not a secret. No existing application or
+Gateway policy is modified. Authentication is never simulated in browser code.
+
+The public introduction separately offers three **simulated Gateway** examples:
+allow a work app, block phishing, and block unapproved file sharing. Fictional
+`.invalid` destinations are never contacted. Real Gateway requires routed traffic
+and, for HTTPS inspection, appropriate certificates and configuration. This demo
+does not enroll a device or enforce browsing policies. Gateway decision logic
+lives in `assets/zero-trust-model.js`, separate from DOM rendering for testing.
 
 ## Workers: Code, Deploy, Run
 

@@ -89,6 +89,9 @@ h1 span { color: var(--accent); }
 .flow-footnote { margin: 18px 0 0; color: var(--muted); font-size: .5625rem; line-height: 1.8; }
 .flow-trace-link { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 8px; color: var(--accent); font-size: .625rem; text-decoration: underline; text-underline-offset: 4px; }
 .workers-feature { margin-top: 28px; }
+.zero-trust-feature { margin-top: 28px; }
+.zero-trust-feature .feature-copy { position: static; }
+.zero-trust-feature .feature-description h3 { font-size: clamp(2.5rem, 5vw, 4.4rem); }
 .workers-feature .feature-copy { position: static; }
 .workers-feature .feature-description h3 { font-size: clamp(2.7rem, 5.6vw, 4.8rem); }
 .workers-preview { padding: 40px; background: var(--paper); border-left: 1px solid var(--line); }
