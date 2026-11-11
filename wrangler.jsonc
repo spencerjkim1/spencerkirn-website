@@ -8,7 +8,8 @@
     { "binding": "DRAWINGS", "bucket_name": "spencerkirn-drawings" }
   ],
   "ratelimits": [
-    { "name": "DRAWINGS_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } }
+    { "name": "DRAWINGS_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } },
+    { "name": "DATA_LAB_RATE_LIMITER", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
   ],
   "assets": {
     "directory": "./.site",

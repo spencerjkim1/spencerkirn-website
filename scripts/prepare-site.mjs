@@ -38,6 +38,8 @@ export async function buildSite(root = projectRoot) {
         });
     }
     await writeFile(join(output, '404.html'), '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Not found — Spencer Kim</title><body style="font-family:Helvetica,Arial,sans-serif;padding:60px"><h1>NOT FOUND</h1><a href="/">Back to Spencer Kim →</a></body></html>\n');
+    // Both hub URLs share one source, without a rewrite triggering HTML canonicalization.
+    await cp(join(output, 'demo.html'), join(output, 'demos.html'));
     return output;
 }
 

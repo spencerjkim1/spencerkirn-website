@@ -88,6 +88,12 @@ h1 span { color: var(--accent); }
 .flow-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .flow-footnote { margin: 18px 0 0; color: var(--muted); font-size: .5625rem; line-height: 1.8; }
 .flow-trace-link { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 8px; color: var(--accent); font-size: .625rem; text-decoration: underline; text-underline-offset: 4px; }
+.workers-feature { margin-top: 28px; }
+.workers-feature .feature-copy { position: static; }
+.workers-feature .feature-description h3 { font-size: clamp(2.7rem, 5.6vw, 4.8rem); }
+.workers-preview { padding: 40px; background: var(--paper); border-left: 1px solid var(--line); }
+.workers-equation { margin: 28px 0; font-size: clamp(1.6rem, 3vw, 2.5rem); letter-spacing: -.05em; line-height: 1.2; }
+.workers-equation span { display: block; margin: 20px 0; font-size: .625rem; color: var(--accent); letter-spacing: .02em; }
 footer { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 100px; border-top: 1px solid var(--line); color: var(--muted); }
 footer > span { font-size: .625rem; text-transform: uppercase; letter-spacing: .1em; }
 footer a { display: grid; place-items: center; width: 44px; height: 44px; font-size: 1.3rem; }
@@ -110,6 +116,7 @@ footer a:hover { color: var(--accent); }
     .intro-title { margin: 0; font-size: 1.5rem; }
     .intro-copy > p:last-child { font-size: .6875rem; }
     .demo-feature { grid-template-columns: 1fr; }
+    .workers-preview { padding: 25px; border-left: 0; border-top: 1px solid var(--line); }
     .feature-copy { position: static; padding: 25px; }
     .feature-meta { flex-direction: row; align-items: center; }
     .interactive-label { margin-left: auto; }

@@ -24,6 +24,7 @@ test('public build excludes credentials, repository internals, and server code',
     assert.equal(await readFile(join(output, 'assets', 'site.css'), 'utf8'), 'body{}');
     for (const path of ['.dev.vars', 'functions', 'assets/.env', 'package.json']) await assert.rejects(access(join(output, path)));
     assert.match(await readFile(join(output, '404.html'), 'utf8'), /NOT FOUND/);
+    assert.equal(await readFile(join(output, 'demos.html'), 'utf8'), await readFile(join(output, 'demo.html'), 'utf8'));
 });
 
 test('rebuilds remove stale generated files without touching source credentials', async (t) => {

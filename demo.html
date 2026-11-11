@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Hands-on Cloudflare demonstrations by Spencer Kim. Explore the Web Application Firewall demo.">
+    <meta name="description" content="Hands-on Cloudflare demonstrations by Spencer Kim. Explore Application Security and Workers: Code, Deploy, Run.">
     <title>Demos — Spencer Kim</title>
     <link rel="icon" href="/assets/favicon.ico?v=2" sizes="16x16 32x32 48x48">
     <link rel="icon" type="image/png" href="/assets/favicon.png?v=2" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2" sizes="180x180">
-    <link rel="stylesheet" href="/assets/demo-hub.css?v=3">
+    <link rel="stylesheet" href="/assets/demo-hub.css?v=4">
     <script type="module" src="/assets/request-flow.js?v=4"></script>
 </head>
 <body id="top">
@@ -34,7 +34,7 @@
         <section class="collection" id="demos" aria-labelledby="collection-title">
             <div class="collection-heading">
                 <h2 id="collection-title">The collection</h2>
-                <span>01 demo</span>
+                <span>02 demos</span>
             </div>
             <article class="demo-feature" aria-labelledby="waf-title">
                 <div class="feature-copy">
@@ -88,6 +88,14 @@
                     <a class="flow-trace-link" href="https://developers.cloudflare.com/rules/simulator/" target="_blank" rel="noopener noreferrer">Explore request tracing in Cloudflare <span aria-hidden="true">↗</span></a>
                     <noscript><p class="flow-footnote">Enable JavaScript to play the request examples.</p></noscript>
                 </figure>
+            </article>
+            <article class="demo-feature workers-feature" aria-labelledby="workers-title">
+                <div class="feature-copy">
+                    <div class="feature-meta"><span>02 / Developer platform</span><span class="interactive-label">Interactive</span></div>
+                    <div class="feature-description"><h3 id="workers-title">WORKERS</h3><p class="product-name">Code. Deploy. Run.</p><p class="product-description">See the processing code, learn the deployment command, then make a real request. Useful backend logic without a server to provision.</p></div>
+                    <a class="open-demo" href="/demo/workers">Open Workers Demo <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a>
+                </div>
+                <div class="workers-preview"><p class="eyebrow">Your code. Cloudflare’s network.</p><p class="workers-equation">Write the logic.<span>↓ npx wrangler deploy</span>Run the Worker.<span>↓ One real request</span>Get clean data.</p><p class="product-description">600 synthetic orders. One useful result.</p></div>
             </article>
         </section>
     </main>

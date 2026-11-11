@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Code. Deploy. Run. See a Cloudflare Worker turn synthetic orders into clean data.">
+    <title>Workers Demo — Spencer Kim</title>
+    <link rel="icon" href="/assets/favicon.ico?v=2" sizes="16x16 32x32 48x48">
+    <link rel="stylesheet" href="/assets/demo-hub.css?v=4">
+    <link rel="stylesheet" href="/assets/data-lab.css?v=2">
+    <script type="module" src="/assets/data-lab.js?v=2"></script>
+</head>
+<body class="data-lab" id="top">
+    <a class="skip-link" href="#lab">Skip to Workers demo</a>
+    <header class="masthead page-width">
+        <a class="wordmark" href="/">Spencer Kim</a>
+        <span class="masthead-label">02 / Developer platform</span>
+        <a class="home-link" href="/demos">← All demos</a>
+    </header>
+    <main class="page-width">
+        <section class="lab-intro" aria-labelledby="lab-title">
+            <p class="eyebrow">Cloudflare Workers / From code to a result</p>
+            <h1 id="lab-title">CODE. DEPLOY.<br><span>RUN.</span></h1>
+            <div class="lab-intro-bottom"><p>Your logic. Cloudflare’s network.<br>No server to provision.</p><span class="lab-runtime" id="runtime-label">Execution location appears after a run</span></div>
+        </section>
+
+        <div class="lab-workspace" id="lab">
+            <section class="lab-code" aria-labelledby="code-title">
+                <div class="lab-step-heading"><div><span class="lab-step">01 / Code</span><h2 id="code-title">Just JavaScript.</h2></div><button type="button" class="lab-copy" id="copy-code" disabled>Copy code</button></div>
+                <p class="lab-copy-text">Remove duplicates. Normalize fields. Redact emails.</p>
+                <div class="lab-editor"><div class="lab-file"><span>clean-orders.js</span><span id="code-lines">Actual processing module</span></div><pre tabindex="0" aria-label="Actual Worker processing source"><code id="source-code">Loading the processing source…</code></pre></div>
+                <p class="lab-source-note">This exact module runs inside the demo’s Worker. Validation and response handling live in the API wrapper. <a href="/assets/clean-orders.js?v=1" target="_blank" rel="noopener noreferrer">View source ↗</a></p>
+            </section>
+
+            <div class="lab-actions">
+                <section class="lab-deploy" aria-labelledby="deploy-title">
+                    <div class="lab-step-heading"><div><span class="lab-step">02 / Deploy</span><h2 id="deploy-title">One command.</h2></div><button type="button" class="lab-copy" id="copy-command" disabled>Copy command</button></div>
+                    <pre class="lab-command"><code><span aria-hidden="true">$ </span>npx wrangler deploy</code></pre>
+                    <p class="lab-copy-text">Run from your configured Workers project after signing in. Wrangler bundles and publishes your code.</p>
+                    <p class="lab-deploy-note">Deployment instructions—not a live terminal. This page never deploys code or accesses account credentials.</p>
+                </section>
+
+                <section class="lab-run" aria-labelledby="run-title">
+                    <div class="lab-step-heading"><div><span class="lab-step">03 / Run</span><h2 id="run-title">Make a real request.</h2></div></div>
+                    <p class="lab-copy-text">600 synthetic orders → Worker → Clean JSON.</p>
+                    <button class="lab-process" id="process" type="button" disabled><span id="process-label">Run Worker</span><span aria-hidden="true">→</span></button>
+                    <p class="lab-status" role="status" id="lab-status">Ready when you are. No uploads. Nothing saved.</p>
+                    <div class="lab-result" id="result" hidden>
+                        <div class="lab-result-main"><strong id="accepted">—</strong><span>clean orders returned</span></div>
+                        <p id="result-summary"></p>
+                        <p class="lab-execution" id="execution"></p>
+                        <details><summary>See the response</summary><pre tabindex="0" aria-label="Worker response excerpt"><code id="response-code"></code></pre><p class="lab-source-note">Excerpt: the summary and first clean record. The API returns every clean record.</p></details>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <details class="lab-how"><summary>How this demo works</summary><div>
+            <p><strong>Browser → POST /api/demo/process → Worker → JSON.</strong> The browser sends <code>{"dataset":"large"}</code>. The Worker generates 600 bundled synthetic orders, validates them, calls the displayed transform, and returns the results. The browser does not execute the transform.</p>
+            <p>This preview runs on your machine. Once deployed, requests run on Cloudflare and show the handling location when available. The endpoint currently shares the website’s Worker; it is not a separately deployed demo service.</p>
+            <p>The deploy command assumes Node.js, an authenticated Cloudflare account, and a configured Wrangler project with any required bindings. The displayed file is a processing module, not a complete standalone Worker. No deployment has been triggered by viewing this page.</p>
+            <p>Request size and frequency are limited. No database, object storage, external API, or deployment credentials are used by Run Worker. Round-trip time is measured in the browser—not CPU billing or a benchmark against AWS or GCP.</p>
+        </div></details>
+        <noscript><p>Enable JavaScript to run the demo. The deployment command and <a href="/assets/clean-orders.js?v=1">processing source</a> remain available.</p></noscript>
+    </main>
+    <footer class="page-width"><span>Spencer Kim / Workers</span><a href="#top" aria-label="Back to top">↑</a></footer>
+</body>
+</html>

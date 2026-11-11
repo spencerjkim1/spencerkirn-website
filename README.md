@@ -24,7 +24,9 @@ binds the prepared public directory as `ASSETS`; server code remains outside it.
 
 ## Demo hub and request lifecycle
 
-`/demo` features the existing WAF demo at `/demo/appsec`. Its animated Traffic
+`/demos` is the hub; `/demo` remains available. The homepage and demo return links
+use `/demos`. The hub features WAF at `/demo/appsec` and the Workers demo below it
+at `/demo/workers`. Its animated Traffic
 sequence is a **simulated product overview**, not a trace of the zone's actual
 configuration or a precise Ruleset Engine phase order. Product stages can span
 multiple phases, and redirects or blocks can terminate processing early.
@@ -47,6 +49,44 @@ Animation stops while hidden or offscreen. Reduced-motion preferences show each
 selected example's still outcome instead. The diagram remains readable without
 JavaScript. The tracing link opens Cloudflare's Rules simulator documentation;
 it does not run a simulation against the account.
+
+## Workers: Code, Deploy, Run
+
+`/demo/workers` shows the actual core transform from `assets/clean-orders.js`,
+the deployment command, and one **Run Worker** button. The server imports that
+same transform; the browser fetches its source for display without executing it.
+The displayed module is not a complete standalone Worker. The deployment panel
+is instructions only: it never runs commands, holds credentials, or deploys code.
+`npx wrangler deploy` assumes an authenticated, configured Workers project.
+
+The button posts `{ "dataset": "large" }` to `/api/demo/process`. The Worker
+generates 600 synthetic orders and returns 400 clean orders, with 50 duplicates
+removed and 150 invalid rows rejected. The page shows a compact result and an
+expandable response excerpt, not tables, charts, selectors, or downloads.
+The endpoint still accepts its existing three bounded sample identifiers
+(12, 120 or 600 synthetic orders) for API compatibility. It
+validates IDs/dates/USD amounts/categories, keeps the first valid occurrence
+of each ID, normalizes categories/currency, redacts emails, and aggregates
+revenue using integer cents. The small example produces eight clean orders,
+one removed duplicate, three rejected rows, and **$644.00** in revenue.
+The browser does not perform the processing. The API currently runs inside the
+website's shared Worker, not a separately deployed demo Worker.
+
+Only sample identifiers are accepted: no arbitrary data uploads, remote URL
+fetching, external services, or persistent storage. Requests require a matching
+Origin and JSON content type, are streamed with a 1 KiB limit, and use
+`DATA_LAB_RATE_LIMITER` (namespace 1002, approximately 10 attempts/IP/minute).
+Missing rate-limit bindings fail closed. Responses are no-store. Downloads
+are not offered in this simplified interface. The API returns cleaned records,
+summary, rejection reasons, and execution metadata; no raw emails are returned.
+
+Processing time is measured Worker wall time, not CPU billing or a benchmark.
+The UI shows round-trip time measured in the browser, not a cross-cloud benchmark.
+Local previews correctly
+identify the local Workers runtime and do not invent an edge location. Deployed
+requests display `request.cf.colo` when available. No new storage or paid
+subscriptions are required. Run `npm run dev` and open
+http://localhost:8081/demo/workers to try it locally.
 
 ## Draw Me Sumn
 

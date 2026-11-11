@@ -4,11 +4,23 @@ import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../demo.html', import.meta.url), 'utf8');
 
-test('demo hub features only the existing WAF demo without placeholders', () => {
-    assert.equal((html.match(/class="demo-feature"/g) || []).length, 1);
+test('demo hub features WAF and the Workers Data Lab without placeholders', () => {
+    assert.equal((html.match(/class="demo-feature(?:[ "])/g) || []).length, 2);
+    assert.match(html, /02 demos/);
     assert.match(html, /href="\/demo\/appsec"/);
+    assert.match(html, /href="\/demo\/workers"/);
     assert.match(html, /id="waf-title">WAF</);
     assert.doesNotMatch(html, /Coming Soon|href="#"|runs on Pages|Core Platform|Storage &amp; Data|Workers AI|Browser Rendering/);
+});
+
+test('demos URL serves the hub and the Workers entry follows WAF', async () => {
+    const redirects = await readFile(new URL('../_redirects', import.meta.url), 'utf8');
+    assert.match(redirects, /^\/demos\/ \/demos 301$/m);
+    assert.ok(html.indexOf('id="workers-title"') > html.indexOf('id="waf-title"'));
+    for (const path of ['../index.html', '../demo/appsec.html', '../demo/workers.html']) {
+        const page = await readFile(new URL(path, import.meta.url), 'utf8');
+        assert.match(page, /href="\/demos"/);
+    }
 });
 
 test('demo hub provides navigation and clearly labels the traffic sequence as a simulation', () => {
@@ -23,7 +35,7 @@ test('demo hub provides navigation and clearly labels the traffic sequence as a 
 
 test('demo hub stylesheet is independently scoped and supports reduced motion', async () => {
     const css = await readFile(new URL('../assets/demo-hub.css', import.meta.url), 'utf8');
-    assert.match(html, /href="\/assets\/demo-hub\.css\?v=3"/);
+    assert.match(html, /href="\/assets\/demo-hub\.css\?v=4"/);
     assert.doesNotMatch(html, /href="\/assets\/site\.css/);
     assert.match(css, /prefers-reduced-motion: reduce/);
     assert.match(css, /focus-visible/);
